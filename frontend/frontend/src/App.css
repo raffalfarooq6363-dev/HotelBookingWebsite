@@ -1,0 +1,62 @@
+/* Responsive Layout and Component Specific Classes */
+
+@media (max-width: 1024px) {
+  .catalog-grid-layout {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .desktop-filter-col {
+    display: none;
+  }
+  
+  .show-on-mobile-flex {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .search-console-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .search-console-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .hide-sm {
+    display: none !important;
+  }
+
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+/* Smooth Image Zoom on Card Hover */
+.luxury-card:hover img {
+  transform: scale(1.04);
+}
+
+/* Custom Print Styles for Booking Voucher */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #booking-voucher, #booking-voucher * {
+    visibility: visible;
+  }
+  #booking-voucher {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none !important;
+    background: #ffffff !important;
+  }
+}
