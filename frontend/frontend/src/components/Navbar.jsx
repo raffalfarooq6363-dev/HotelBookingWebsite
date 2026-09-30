@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Hotel, 
-  Heart, 
-  Briefcase, 
-  User, 
-  Menu, 
-  X, 
-  ChevronDown, 
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Hotel,
+  Heart,
+  Briefcase,
+  User,
+  Menu,
+  X,
+  ChevronDown,
   Sparkles,
-  LogOut
+  LogOut,
+  LayoutDashboard,
+  Phone,
+  Shield
 } from 'lucide-react';
 import { CURRENCIES } from '../data/hotelsData';
 
@@ -19,447 +22,580 @@ export default function Navbar({
   bookingsCount,
   onOpenWishlist,
   onOpenBookings,
+  onOpenDashboard,
   onOpenAuth,
   currentUser,
   onLogout
 }) {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled]           = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen]   = useState(false);
+  const [currencyOpen, setCurrencyOpen]       = useState(false);
+  const [userDropOpen, setUserDropOpen]       = useState(false);
+
+  const currencyRef = useRef(null);
+  const userRef     = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (currencyRef.current && !currencyRef.current.contains(e.target)) setCurrencyOpen(false);
+      if (userRef.current && !userRef.current.contains(e.target)) setUserDropOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const isManager = ['admin', 'manager'].includes(currentUser?.role?.toLowerCase());
+
   const navLinks = [
-    { name: 'Rooms & Suites', href: '#catalog' },
-    { name: 'Destinations', href: '#destinations' },
-    { name: 'Experiences', href: '#experiences' },
-    { name: 'Special Offers', href: '#offers' },
-    { name: 'Guest Reviews', href: '#reviews' },
-    { name: 'FAQ', href: '#faq' }
+    { name: 'Rooms & Suites',  href: '#catalog' },
+    { name: 'Destinations',    href: '#destinations' },
+    { name: 'Experiences',     href: '#experiences' },
+    { name: 'Offers',          href: '#offers' },
+    { name: 'Reviews',         href: '#reviews' },
+    { name: 'FAQ',             href: '#faq' },
   ];
 
+  const navbarBg = isScrolled
+    ? 'rgba(255,255,255,0.97)'
+    : 'rgba(255,255,255,0.92)';
+
+  const navbarShadow = isScrolled
+    ? '0 4px 32px rgba(15,32,68,0.1)'
+    : '0 2px 12px rgba(15,32,68,0.05)';
+
   return (
-    <header
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 900,
-        height: 'var(--nav-height)',
-        display: 'flex',
-        alignItems: 'center',
-        transition: 'all 0.35s ease',
-        background: isScrolled 
-          ? 'rgba(255, 255, 255, 0.96)' 
-          : 'rgba(255, 255, 255, 0.88)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(197, 155, 63, 0.22)',
-        boxShadow: isScrolled ? '0 10px 30px rgba(180, 160, 120, 0.12)' : '0 4px 20px rgba(180, 160, 120, 0.05)'
-      }}
-    >
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {/* Brand Logo */}
-        <a 
-          href="#"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            color: '#1c1917',
-            textDecoration: 'none'
-          }}
-        >
-          <div style={{
-            width: '42px',
-            height: '42px',
-            background: 'var(--gold-gradient)',
-            borderRadius: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#ffffff',
-            boxShadow: '0 4px 15px rgba(197, 155, 63, 0.35)'
-          }}>
-            <Hotel size={24} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ 
-              fontFamily: 'var(--font-serif)', 
-              fontSize: '1.45rem', 
-              fontWeight: 700, 
-              letterSpacing: '0.03em',
-              color: '#1c1917',
-              lineHeight: 1
-            }}>
-              Luxe<span style={{ color: 'var(--gold)' }}>Haven</span>
-            </span>
-            <span style={{ 
-              fontSize: '0.65rem', 
-              letterSpacing: '0.22em', 
-              textTransform: 'uppercase', 
-              color: '#857f77',
-              marginTop: '4px',
-              fontWeight: 600
-            }}>
-              Hotels & Resorts
-            </span>
-          </div>
-        </a>
+    <>
+      <header style={{
+        position:     'fixed',
+        top:          0,
+        left:         0,
+        right:        0,
+        zIndex:       900,
+        height:       'var(--nav-height)',
+        background:   navbarBg,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: isScrolled
+          ? '1px solid rgba(15,32,68,0.1)'
+          : '1px solid rgba(15,32,68,0.06)',
+        boxShadow:    navbarShadow,
+        transition:   'all 0.3s ease',
+      }}>
+        <div className="container" style={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px',
+        }}>
 
-        {/* Desktop Navigation Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '28px' }} className="desktop-nav">
-          {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              style={{
-                color: '#292524',
-                fontSize: '0.92rem',
-                fontWeight: 600,
-                letterSpacing: '0.01em',
-                transition: 'color 0.2s ease',
-                position: 'relative',
-                padding: '6px 0'
-              }}
-              onMouseEnter={(e) => (e.target.style.color = 'var(--gold)')}
-              onMouseLeave={(e) => (e.target.style.color = '#292524')}
-            >
-              {link.name}
-            </a>
-          ))}
-        </nav>
-
-        {/* Action Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Currency Selector */}
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                color: '#1c1917',
-                background: '#ffffff',
-                border: '1px solid #e8e2d5',
-                padding: '7px 12px',
-                borderRadius: '8px',
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
-              }}
-              aria-label="Currency Selector"
-            >
-              <span>{currency.code}</span>
-              <span style={{ color: 'var(--gold)' }}>({currency.symbol})</span>
-              <ChevronDown size={14} style={{ color: '#857f77' }} />
-            </button>
-
-            {currencyDropdownOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '110%',
-                  right: 0,
-                  background: '#ffffff',
-                  border: '1px solid rgba(197, 155, 63, 0.3)',
-                  borderRadius: '10px',
-                  padding: '6px',
-                  minWidth: '140px',
-                  boxShadow: '0 12px 30px rgba(160, 140, 110, 0.15)',
-                  zIndex: 950
-                }}
-              >
-                {CURRENCIES.map((curr) => (
-                  <button
-                    key={curr.code}
-                    onClick={() => {
-                      setCurrency(curr);
-                      setCurrencyDropdownOpen(false);
-                    }}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      color: currency.code === curr.code ? 'var(--gold)' : '#1c1917',
-                      fontSize: '0.85rem',
-                      fontWeight: currency.code === curr.code ? 700 : 500,
-                      background: currency.code === curr.code ? 'var(--gold-light)' : 'none'
-                    }}
-                  >
-                    <span>{curr.code}</span>
-                    <span style={{ color: 'var(--gold)' }}>{curr.symbol}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Wishlist Button */}
-          <button
-            onClick={onOpenWishlist}
-            style={{
-              position: 'relative',
+          {/* ── Brand Logo ── */}
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              background: 'var(--gold-gradient)',
+              borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '8px',
-              background: '#ffffff',
-              border: '1px solid #e8e2d5',
-              color: '#1c1917',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
-            }}
-            title="Saved Favorites"
-            aria-label="Wishlist"
-          >
-            <Heart size={18} style={{ color: wishlistCount > 0 ? '#ef4444' : '#1c1917', fill: wishlistCount > 0 ? '#ef4444' : 'none' }} />
-            {wishlistCount > 0 && (
-              <span
+              boxShadow: '0 4px 14px var(--gold-glow)',
+            }}>
+              <Hotel size={22} color="#fff" />
+            </div>
+            <div>
+              <div style={{
+                fontFamily:    'var(--font-serif)',
+                fontSize:      '1.5rem',
+                fontWeight:    700,
+                color:         'var(--primary)',
+                letterSpacing: '0.01em',
+                lineHeight:    1,
+              }}>
+                Luxe<span style={{ color: 'var(--gold)' }}>Haven</span>
+              </div>
+              <div style={{
+                fontSize:      '0.58rem',
+                letterSpacing: '0.24em',
+                textTransform: 'uppercase',
+                color:         'var(--text-muted)',
+                marginTop:     '3px',
+                fontWeight:    600,
+              }}>
+                Hotels &amp; Resorts
+              </div>
+            </div>
+          </a>
+
+          {/* ── Desktop Nav Links ── */}
+          <nav className="desktop-nav" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2px',
+            flex: 1,
+            justifyContent: 'center',
+          }}>
+            {navLinks.map(link => (
+              <a
+                key={link.name}
+                href={link.href}
                 style={{
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
-                  background: '#ef4444',
-                  color: '#ffffff',
-                  fontSize: '0.7rem',
-                  fontWeight: 700,
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)'
+                  color:         'var(--text-body)',
+                  fontSize:      '0.875rem',
+                  fontWeight:    500,
+                  padding:       '6px 13px',
+                  borderRadius:  'var(--radius-sm)',
+                  transition:    'all 0.2s ease',
+                  whiteSpace:    'nowrap',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.color = 'var(--primary)';
+                  e.currentTarget.style.background = 'var(--primary-pale)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.color = 'var(--text-body)';
+                  e.currentTarget.style.background = 'transparent';
                 }}
               >
-                {wishlistCount}
-              </span>
-            )}
-          </button>
+                {link.name}
+              </a>
+            ))}
+          </nav>
 
-          {/* My Bookings Button */}
-          <button
-            onClick={onOpenBookings}
-            style={{
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'var(--gold-light)',
-              border: '1px solid var(--gold-border)',
-              color: '#8b5e14',
-              padding: '8px 14px',
-              borderRadius: '8px',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              boxShadow: '0 2px 6px rgba(197, 155, 63, 0.08)'
-            }}
-            title="Manage Reservations"
-          >
-            <Briefcase size={16} style={{ color: 'var(--gold)' }} />
-            <span className="hide-sm">My Bookings</span>
-            {bookingsCount > 0 && (
-              <span
-                style={{
-                  background: 'var(--gold)',
-                  color: '#ffffff',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  padding: '1px 6px',
-                  borderRadius: '10px'
-                }}
-              >
-                {bookingsCount}
-              </span>
-            )}
-          </button>
+          {/* ── Right Actions ── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
 
-          {/* User Profile / Sign In */}
-          {currentUser ? (
-            <div style={{ position: 'relative' }}>
+            {/* Currency Selector */}
+            <div ref={currencyRef} style={{ position: 'relative' }}>
               <button
-                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                onClick={() => setCurrencyOpen(!currencyOpen)}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  background: 'var(--gold-gradient)',
-                  color: '#ffffff',
-                  padding: '7px 14px',
-                  borderRadius: '8px',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  boxShadow: '0 4px 15px rgba(197, 155, 63, 0.25)'
+                  display:     'flex',
+                  alignItems:  'center',
+                  gap:         '5px',
+                  background:  '#fff',
+                  border:      '1px solid var(--border)',
+                  borderRadius:'var(--radius-sm)',
+                  padding:     '7px 11px',
+                  fontSize:    '0.82rem',
+                  fontWeight:  600,
+                  color:       'var(--text-main)',
+                  boxShadow:   'var(--shadow-xs)',
+                  transition:  'all 0.2s ease',
                 }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--gold)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
               >
-                <div style={{
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  background: '#ffffff',
-                  color: '#1c1917',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.75rem',
-                  fontWeight: 800
-                }}>
-                  {currentUser.name.charAt(0).toUpperCase()}
-                </div>
-                <span className="hide-sm">{currentUser.name.split(' ')[0]}</span>
-                <ChevronDown size={14} />
+                <span style={{ color: 'var(--gold)', fontWeight: 700 }}>{currency.symbol}</span>
+                <span>{currency.code}</span>
+                <ChevronDown size={13} style={{ color: 'var(--text-muted)', transform: currencyOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
               </button>
 
-              {userDropdownOpen && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '110%',
-                    right: 0,
-                    background: '#ffffff',
-                    border: '1px solid rgba(197, 155, 63, 0.3)',
-                    borderRadius: '10px',
-                    padding: '8px',
-                    minWidth: '200px',
-                    boxShadow: '0 12px 30px rgba(160, 140, 110, 0.15)',
-                    zIndex: 950
-                  }}
-                >
-                  <div style={{ padding: '8px 10px', borderBottom: '1px solid #f1ece1' }}>
-                    <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: 600, color: '#1c1917' }}>{currentUser.name}</p>
-                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#857f77' }}>{currentUser.email}</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      onOpenBookings();
-                      setUserDropdownOpen(false);
-                    }}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '8px 10px',
-                      borderRadius: '6px',
-                      color: '#1c1917',
-                      fontSize: '0.85rem',
-                      marginTop: '4px'
-                    }}
-                  >
-                    <Briefcase size={16} style={{ color: 'var(--gold)' }} /> My Reservations
-                  </button>
-                  <button
-                    onClick={() => {
-                      onLogout();
-                      setUserDropdownOpen(false);
-                    }}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '8px 10px',
-                      borderRadius: '6px',
-                      color: '#ef4444',
-                      fontSize: '0.85rem'
-                    }}
-                  >
-                    <LogOut size={16} /> Sign Out
-                  </button>
+              {currencyOpen && (
+                <div style={{
+                  position:    'absolute',
+                  top:         'calc(100% + 8px)',
+                  right:       0,
+                  background:  '#fff',
+                  border:      '1px solid var(--border)',
+                  borderRadius:'var(--radius-md)',
+                  padding:     '6px',
+                  minWidth:    '150px',
+                  boxShadow:   'var(--shadow-lg)',
+                  zIndex:      960,
+                  animation:   'fadeIn 0.15s ease',
+                }}>
+                  {CURRENCIES.map(curr => (
+                    <button
+                      key={curr.code}
+                      onClick={() => { setCurrency(curr); setCurrencyOpen(false); }}
+                      style={{
+                        width:        '100%',
+                        display:      'flex',
+                        alignItems:   'center',
+                        justifyContent: 'space-between',
+                        padding:      '9px 12px',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize:     '0.85rem',
+                        fontWeight:   currency.code === curr.code ? 700 : 500,
+                        color:        currency.code === curr.code ? 'var(--gold)' : 'var(--text-main)',
+                        background:   currency.code === curr.code ? 'var(--gold-light)' : 'transparent',
+                        transition:   'all 0.15s ease',
+                      }}
+                      onMouseEnter={e => { if (currency.code !== curr.code) e.currentTarget.style.background = 'var(--bg-alt)'; }}
+                      onMouseLeave={e => { if (currency.code !== curr.code) e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <span>{curr.code}</span>
+                      <span style={{ color: 'var(--gold)', fontWeight: 700 }}>{curr.symbol}</span>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-          ) : (
+
+            {/* Wishlist */}
             <button
-              onClick={onOpenAuth}
+              onClick={onOpenWishlist}
+              title="Saved Favourites"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: 'var(--gold-gradient)',
-                color: '#ffffff',
-                padding: '8px 18px',
-                borderRadius: '8px',
-                fontSize: '0.88rem',
-                fontWeight: 600,
-                boxShadow: '0 4px 16px rgba(197, 155, 63, 0.3)'
+                position:    'relative',
+                width:       '38px',
+                height:      '38px',
+                display:     'flex',
+                alignItems:  'center',
+                justifyContent: 'center',
+                borderRadius:'var(--radius-sm)',
+                background:  '#fff',
+                border:      '1px solid var(--border)',
+                color:       'var(--text-main)',
+                boxShadow:   'var(--shadow-xs)',
+                transition:  'all 0.2s ease',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = '#ef4444';
+                e.currentTarget.style.background = '#fff5f5';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--border)';
+                e.currentTarget.style.background = '#fff';
               }}
             >
-              <User size={16} />
-              <span>Sign In</span>
+              <Heart
+                size={17}
+                style={{
+                  color: wishlistCount > 0 ? '#ef4444' : 'var(--text-muted)',
+                  fill:  wishlistCount > 0 ? '#ef4444' : 'none',
+                  transition: '0.2s'
+                }}
+              />
+              {wishlistCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: '-5px', right: '-5px',
+                  background: '#ef4444', color: '#fff',
+                  fontSize: '0.65rem', fontWeight: 800,
+                  width: '17px', height: '17px',
+                  borderRadius: '50%', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 2px 6px rgba(239,68,68,0.5)',
+                }}>
+                  {wishlistCount}
+                </span>
+              )}
             </button>
-          )}
 
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="mobile-menu-btn"
-            style={{
-              display: 'none',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '8px',
-              background: '#ffffff',
-              border: '1px solid #e8e2d5',
-              color: '#1c1917'
-            }}
-            aria-label="Toggle Navigation"
-          >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+            {/* My Bookings */}
+            <button
+              onClick={onOpenBookings}
+              className="hide-sm"
+              title="My Reservations"
+              style={{
+                display:    'flex',
+                alignItems: 'center',
+                gap:        '7px',
+                background: 'var(--primary-pale)',
+                border:     '1px solid rgba(15,32,68,0.12)',
+                color:      'var(--primary)',
+                padding:    '8px 15px',
+                borderRadius: 'var(--radius-sm)',
+                fontSize:   '0.85rem',
+                fontWeight: 600,
+                transition: 'all 0.2s ease',
+                boxShadow:  'var(--shadow-xs)',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'var(--primary)';
+                e.currentTarget.style.color = '#fff';
+                e.currentTarget.style.borderColor = 'var(--primary)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'var(--primary-pale)';
+                e.currentTarget.style.color = 'var(--primary)';
+                e.currentTarget.style.borderColor = 'rgba(15,32,68,0.12)';
+              }}
+            >
+              <Briefcase size={15} />
+              Bookings
+              {bookingsCount > 0 && (
+                <span style={{
+                  background: 'var(--gold)',
+                  color: '#fff',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  padding: '1px 6px',
+                  borderRadius: 'var(--radius-full)',
+                }}>
+                  {bookingsCount}
+                </span>
+              )}
+            </button>
+
+            {/* User Profile / Sign In */}
+            {currentUser ? (
+              <div ref={userRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setUserDropOpen(!userDropOpen)}
+                  style={{
+                    display:    'flex',
+                    alignItems: 'center',
+                    gap:        '8px',
+                    background: 'var(--gold-gradient)',
+                    color:      '#fff',
+                    padding:    '7px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize:   '0.85rem',
+                    fontWeight: 600,
+                    boxShadow:  '0 4px 16px var(--gold-glow)',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.08)'}
+                  onMouseLeave={e => e.currentTarget.style.filter = 'none'}
+                >
+                  <div style={{
+                    width: '26px', height: '26px', borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.25)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.8rem', fontWeight: 800,
+                    border: '1.5px solid rgba(255,255,255,0.5)',
+                  }}>
+                    {currentUser.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="hide-sm">{currentUser.name.split(' ')[0]}</span>
+                  <ChevronDown size={13} style={{ transform: userDropOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+                </button>
+
+                {userDropOpen && (
+                  <div style={{
+                    position: 'absolute', top: 'calc(100% + 10px)', right: 0,
+                    background: '#fff',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '8px',
+                    minWidth: '210px',
+                    boxShadow: 'var(--shadow-lg)',
+                    zIndex: 960,
+                    animation: 'fadeIn 0.15s ease',
+                  }}>
+                    {/* User info */}
+                    <div style={{
+                      padding: '10px 12px 12px',
+                      borderBottom: '1px solid var(--border)',
+                      marginBottom: '6px',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{
+                          width: '36px', height: '36px', borderRadius: '50%',
+                          background: 'var(--gold-gradient)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: '#fff', fontSize: '0.95rem', fontWeight: 700,
+                          flexShrink: 0,
+                        }}>
+                          {currentUser.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                            {currentUser.name}
+                          </div>
+                          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '1px' }}>
+                            {currentUser.email}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{
+                        marginTop: '8px',
+                        display: 'inline-block',
+                        background: 'var(--gold-light)',
+                        color: 'var(--gold-hover)',
+                        border: '1px solid var(--gold-border)',
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        padding: '2px 10px',
+                        borderRadius: 'var(--radius-full)',
+                      }}>
+                        {isManager ? '⭐ Manager' : currentUser.membershipTier || 'Member'}
+                      </div>
+                    </div>
+
+                    {/* Dashboard */}
+                    <DropItem
+                      icon={<LayoutDashboard size={15} />}
+                      label={isManager ? 'Manager Dashboard' : 'My Dashboard'}
+                      onClick={() => { onOpenDashboard(); setUserDropOpen(false); }}
+                    />
+
+                    {/* My Reservations */}
+                    <DropItem
+                      icon={<Briefcase size={15} />}
+                      label="My Reservations"
+                      onClick={() => { onOpenBookings(); setUserDropOpen(false); }}
+                    />
+
+                    {/* Sign Out */}
+                    <div style={{ borderTop: '1px solid var(--border)', marginTop: '6px', paddingTop: '6px' }}>
+                      <DropItem
+                        icon={<LogOut size={15} />}
+                        label="Sign Out"
+                        danger
+                        onClick={() => { onLogout(); setUserDropOpen(false); }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={onOpenAuth}
+                style={{
+                  display:    'flex',
+                  alignItems: 'center',
+                  gap:        '7px',
+                  background: 'var(--primary)',
+                  color:      '#fff',
+                  padding:    '8px 18px',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize:   '0.88rem',
+                  fontWeight: 600,
+                  boxShadow:  '0 4px 16px rgba(15,32,68,0.28)',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'var(--gold)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px var(--gold-glow)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'var(--primary)';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(15,32,68,0.28)';
+                }}
+              >
+                <User size={15} />
+                Sign In
+              </button>
+            )}
+
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="mobile-menu-btn"
+              style={{
+                display:      'none',
+                alignItems:   'center',
+                justifyContent: 'center',
+                width:        '38px',
+                height:       '38px',
+                borderRadius: 'var(--radius-sm)',
+                background:   '#fff',
+                border:       '1px solid var(--border)',
+                color:        'var(--text-main)',
+                boxShadow:    'var(--shadow-xs)',
+              }}
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile Drawer Menu */}
+      {/* ── Mobile Menu ── */}
       {mobileMenuOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 'var(--nav-height)',
-            left: 0,
-            right: 0,
-            background: '#ffffff',
-            borderBottom: '1px solid rgba(197, 155, 63, 0.25)',
-            padding: '24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-            boxShadow: '0 15px 35px rgba(160, 140, 110, 0.15)'
-          }}
-        >
-          {navLinks.map((link) => (
+        <div style={{
+          position:   'fixed',
+          top:        'var(--nav-height)',
+          left:       0,
+          right:      0,
+          background: '#fff',
+          borderBottom: '1px solid var(--border)',
+          padding:    '20px 24px',
+          display:    'flex',
+          flexDirection: 'column',
+          gap:        '4px',
+          boxShadow:  'var(--shadow-lg)',
+          zIndex:     850,
+          animation:  'fadeIn 0.2s ease',
+        }}>
+          {navLinks.map(link => (
             <a
               key={link.name}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
               style={{
-                color: '#1c1917',
-                fontSize: '1.05rem',
-                fontWeight: 600,
-                padding: '8px 0',
-                borderBottom: '1px solid #f4ede2'
+                color:       'var(--text-main)',
+                fontSize:    '1rem',
+                fontWeight:  600,
+                padding:     '11px 14px',
+                borderRadius:'var(--radius-sm)',
+                borderBottom:'1px solid var(--bg-alt)',
+                transition:  'all 0.15s ease',
               }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--primary-pale)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               {link.name}
             </a>
           ))}
+          {/* Mobile bookings */}
+          <button
+            onClick={() => { onOpenBookings(); setMobileMenuOpen(false); }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '11px 14px', borderRadius: 'var(--radius-sm)',
+              fontSize: '1rem', fontWeight: 600, color: 'var(--primary)',
+              marginTop: '6px', background: 'var(--primary-pale)',
+              border: '1px solid rgba(15,32,68,0.1)',
+            }}
+          >
+            <Briefcase size={16} />
+            My Bookings {bookingsCount > 0 && `(${bookingsCount})`}
+          </button>
+          {/* Mobile staff link */}
+          <a
+            href="/manager"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '10px 14px', borderRadius: 'var(--radius-sm)',
+              fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)',
+              marginTop: '4px',
+            }}
+          >
+            <Shield size={14} />
+            Staff / Manager Login
+          </a>
         </div>
       )}
-    </header>
+    </>
+  );
+}
+
+// ── Dropdown Item Helper ──────────────────────────────
+function DropItem({ icon, label, onClick, danger }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width:       '100%',
+        display:     'flex',
+        alignItems:  'center',
+        gap:         '9px',
+        padding:     '9px 12px',
+        borderRadius:'var(--radius-sm)',
+        fontSize:    '0.87rem',
+        fontWeight:  500,
+        color:       danger ? '#ef4444' : 'var(--text-main)',
+        textAlign:   'left',
+        transition:  'all 0.15s ease',
+      }}
+      onMouseEnter={e => e.currentTarget.style.background = danger ? '#fff5f5' : 'var(--bg-alt)'}
+      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+    >
+      <span style={{ color: danger ? '#ef4444' : 'var(--gold)', flexShrink: 0 }}>{icon}</span>
+      {label}
+    </button>
   );
 }

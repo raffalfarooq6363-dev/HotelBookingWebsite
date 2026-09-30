@@ -123,6 +123,27 @@ export const api = {
     localStorage.removeItem('luxehaven_user');
   },
 
+  // Manager Portal — dedicated endpoints (role = Manager only)
+  managerLogin: async (email, password) => {
+    const data = await request('/auth/manager/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+    if (data.token) {
+      localStorage.setItem('luxehaven_token', data.token);
+    }
+    return data;
+  },
+
+  managerRegister: async (name, email, password) => {
+    const data = await request('/auth/manager/register', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password })
+    });
+    // Registration only — no auto-login token
+    return data;
+  },
+
   // Promo Codes & Addons
   validatePromo: (code) => request('/offers/validate', {
     method: 'POST',
@@ -148,5 +169,25 @@ export const api = {
   subscribeNewsletter: (email) => request('/newsletter/subscribe', {
     method: 'POST',
     body: JSON.stringify({ email })
+  }),
+
+  // ─── Admin / Manager Dashboard APIs ───
+  getAdminStats: () => request('/admin/stats'),
+  
+  getAllBookings: () => request('/admin/bookings'),
+
+  getAllUsers: () => request('/admin/users'),
+
+  getAllReviews: () => request('/admin/reviews'),
+
+  getAllSubscribers: () => request('/admin/subscribers'),
+
+  updateBookingStatus: (bookingId, status) => request(`/admin/bookings/${bookingId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status })
+  }),
+
+  deleteRoom: (roomId) => request(`/admin/rooms/${roomId}`, {
+    method: 'DELETE'
   })
 };

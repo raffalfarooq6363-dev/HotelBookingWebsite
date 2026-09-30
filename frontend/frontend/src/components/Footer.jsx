@@ -1,211 +1,227 @@
 import React, { useState } from 'react';
-import { 
-  Hotel, 
-  Mail, 
-  Send, 
-  ShieldCheck, 
-  Phone, 
-  MapPin, 
-  Globe, 
-  Share2, 
-  Compass, 
-  MessageCircle, 
-  Check 
+import {
+  Hotel, Mail, Send, ShieldCheck,
+  Phone, MapPin, Globe, Share2, Compass, MessageCircle, Check
 } from 'lucide-react';
 
 export default function Footer({ onSubscribeNewsletter }) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail]         = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email) return;
     setSubscribed(true);
-    if (onSubscribeNewsletter) {
-      onSubscribeNewsletter(email);
-    }
+    if (onSubscribeNewsletter) onSubscribeNewsletter(email);
     setEmail('');
     setTimeout(() => setSubscribed(false), 5000);
   };
 
+  const linkStyle = {
+    color: 'rgba(255,255,255,0.52)',
+    fontSize: '0.87rem',
+    lineHeight: '2',
+    transition: 'color 0.2s ease',
+    display: 'block',
+  };
+
+  const headingStyle = {
+    color: '#fff',
+    fontSize: '0.72rem',
+    fontWeight: 700,
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    marginBottom: '18px',
+    fontFamily: 'var(--font-sans)',
+  };
+
   return (
-    <footer style={{ 
-      backgroundColor: '#f6f3ec', 
-      color: '#57534e', 
-      paddingTop: '80px', 
-      paddingBottom: '40px', 
-      borderTop: '1px solid #e8e2d5' 
+    <footer style={{
+      background:   'var(--bg-dark)',
+      borderTop:    '3px solid var(--gold)',
+      paddingTop:   '80px',
+      paddingBottom:'40px',
+      position:     'relative',
+      overflow:     'hidden',
     }}>
+      {/* Decorative circles */}
+      <div style={{
+        position: 'absolute', top: '-120px', right: '-80px',
+        width: '450px', height: '450px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(184,145,58,0.07) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '-60px', left: '-80px',
+        width: '300px', height: '300px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(30,64,128,0.18) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
       <div className="container">
-        {/* Top Newsletter Banner - Luminous Light Card */}
+
+        {/* Newsletter Banner */}
         <div style={{
-          background: 'linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%)',
-          borderRadius: '16px',
-          padding: '40px',
-          marginBottom: '70px',
-          border: '1px solid rgba(197, 155, 63, 0.3)',
-          boxShadow: '0 12px 35px rgba(180, 160, 120, 0.1)',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
+          background:   'linear-gradient(135deg, rgba(184,145,58,0.14) 0%, rgba(30,64,128,0.12) 100%)',
+          borderRadius: '20px',
+          padding:      '44px 48px',
+          marginBottom: '72px',
+          border:       '1px solid rgba(184,145,58,0.22)',
+          display:      'flex',
+          flexWrap:     'wrap',
+          alignItems:   'center',
           justifyContent: 'space-between',
-          gap: '24px'
+          gap:          '28px',
         }}>
-          <div style={{ maxWidth: '480px' }}>
-            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: 700 }}>
+          <div style={{ maxWidth: '460px' }}>
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--gold)', fontWeight: 700, marginBottom: '10px' }}>
               The LuxeClub Journal
-            </span>
-            <h3 style={{ fontSize: '1.65rem', color: '#1c1917', margin: '6px 0 8px 0', fontFamily: 'var(--font-serif)' }}>
+            </div>
+            <h3 style={{ fontSize: '1.7rem', color: '#fff', margin: '0 0 10px 0', fontFamily: 'var(--font-serif)' }}>
               Join Our Private Circle
             </h3>
-            <p style={{ margin: 0, fontSize: '0.92rem', color: '#57534e' }}>
-              Receive invitation-only private sale alerts, seasonal complimentary upgrade codes, and insider travel dossiers.
+            <p style={{ margin: 0, fontSize: '0.92rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
+              Receive invitation-only private sale alerts, seasonal upgrade codes, and insider travel dossiers.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', flexGrow: 1, maxWidth: '440px' }}>
             <div style={{ position: 'relative', flexGrow: 1 }}>
-              <Mail size={16} style={{ position: 'absolute', left: '14px', top: '15px', color: '#857f77' }} />
+              <Mail size={15} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.35)' }} />
               <input
                 type="email"
                 required
                 placeholder="Enter your private email..."
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '12px 16px 12px 42px',
-                  borderRadius: '8px',
-                  background: '#ffffff',
-                  border: '1px solid #dcd5c9',
-                  color: '#1c1917',
+                  padding: '13px 16px 13px 42px',
+                  borderRadius: '10px',
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  color: '#fff',
                   fontSize: '0.9rem',
-                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.03)'
                 }}
               />
             </div>
-            <button
-              type="submit"
-              className="btn-gold"
-              style={{ padding: '12px 22px', borderRadius: '8px' }}
-            >
+            <button type="submit" className="btn-gold" style={{ padding: '13px 22px', borderRadius: '10px', flexShrink: 0 }}>
               {subscribed ? <Check size={18} /> : <Send size={18} />}
             </button>
           </form>
         </div>
 
-        {/* 4 Columns Links */}
+        {/* 4-Column Links */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '40px',
-          marginBottom: '60px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+          gap: '44px',
+          marginBottom: '64px',
         }}>
-          {/* Col 1: Brand Info */}
+
+          {/* Brand */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
               <div style={{
-                width: '36px',
-                height: '36px',
+                width: '38px', height: '38px',
                 background: 'var(--gold-gradient)',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#ffffff',
-                boxShadow: '0 3px 12px rgba(197, 155, 63, 0.3)'
+                borderRadius: '9px', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 4px 14px var(--gold-glow)',
               }}>
-                <Hotel size={20} />
+                <Hotel size={20} color="#fff" />
               </div>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 700, color: '#1c1917' }}>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 700, color: '#fff' }}>
                 Luxe<span style={{ color: 'var(--gold)' }}>Haven</span>
               </span>
             </div>
-            <p style={{ fontSize: '0.88rem', lineHeight: 1.7, marginBottom: '20px', color: '#57534e' }}>
-              Curating architectural masterpieces and unparalleled private stays for the world’s most refined travelers.
+            <p style={{ fontSize: '0.87rem', lineHeight: 1.75, color: 'rgba(255,255,255,0.5)', marginBottom: '22px' }}>
+              Curating architectural masterpieces and private stays for the world's most refined travelers.
             </p>
-            <div style={{ display: 'flex', gap: '14px' }}>
-              <a href="#" style={{ color: '#857f77', transition: 'color 0.2s' }} aria-label="Global Network"><Globe size={18} /></a>
-              <a href="#" style={{ color: '#857f77', transition: 'color 0.2s' }} aria-label="Social Share"><Share2 size={18} /></a>
-              <a href="#" style={{ color: '#857f77', transition: 'color 0.2s' }} aria-label="Discover"><Compass size={18} /></a>
-              <a href="#" style={{ color: '#857f77', transition: 'color 0.2s' }} aria-label="Concierge Chat"><MessageCircle size={18} /></a>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              {[Globe, Share2, Compass, MessageCircle].map((Icon, i) => (
+                <a key={i} href="#"
+                  style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.color = 'var(--gold)'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
+                >
+                  <Icon size={18} />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Col 2: Destinations */}
+          {/* Destinations */}
           <div>
-            <h4 style={{ color: '#1c1917', fontSize: '1rem', marginBottom: '16px' }}>Destinations</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem' }}>
-              <li><a href="#destinations" style={{ color: '#57534e' }}>Malé Atoll, Maldives</a></li>
-              <li><a href="#destinations" style={{ color: '#57534e' }}>Paris, France</a></li>
-              <li><a href="#destinations" style={{ color: '#57534e' }}>Ubud & Seminyak, Bali</a></li>
-              <li><a href="#destinations" style={{ color: '#57534e' }}>Zermatt, Swiss Alps</a></li>
-              <li><a href="#destinations" style={{ color: '#57534e' }}>Roppongi, Tokyo</a></li>
-              <li><a href="#destinations" style={{ color: '#57534e' }}>Oia, Santorini</a></li>
-              <li><a href="#destinations" style={{ color: '#57534e' }}>Central Park, New York</a></li>
-            </ul>
+            <div style={headingStyle}>Destinations</div>
+            {['Malé Atoll, Maldives','Paris, France','Ubud & Seminyak, Bali','Zermatt, Swiss Alps','Roppongi, Tokyo','Oia, Santorini','Central Park, New York'].map(d => (
+              <a key={d} href="#destinations" style={linkStyle}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--gold)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.52)'}
+              >{d}</a>
+            ))}
           </div>
 
-          {/* Col 3: Experiences */}
+          {/* Experiences */}
           <div>
-            <h4 style={{ color: '#1c1917', fontSize: '1rem', marginBottom: '16px' }}>Experiences</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem' }}>
-              <li><a href="#experiences" style={{ color: '#57534e' }}>Michelin-Star Gastronomy</a></li>
-              <li><a href="#experiences" style={{ color: '#57534e' }}>Ayurvedic Thermal Spa</a></li>
-              <li><a href="#experiences" style={{ color: '#57534e' }}>Private Yacht Charters</a></li>
-              <li><a href="#experiences" style={{ color: '#57534e' }}>Alpine Helicopter Flights</a></li>
-              <li><a href="#offers" style={{ color: '#57534e' }}>Honeymoon Sanctuaries</a></li>
-              <li><a href="#offers" style={{ color: '#57534e' }}>Extended Stay Privileges</a></li>
-            </ul>
+            <div style={headingStyle}>Experiences</div>
+            {['Michelin-Star Gastronomy','Ayurvedic Thermal Spa','Private Yacht Charters','Alpine Helicopter Flights','Honeymoon Sanctuaries','Extended Stay Privileges'].map(ex => (
+              <a key={ex} href="#experiences" style={linkStyle}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--gold)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.52)'}
+              >{ex}</a>
+            ))}
           </div>
 
-          {/* Col 4: Concierge & Contact */}
+          {/* Concierge */}
           <div>
-            <h4 style={{ color: '#1c1917', fontSize: '1rem', marginBottom: '16px' }}>24/7 Global Concierge</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.88rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#44403c' }}>
-                <Phone size={16} style={{ color: 'var(--gold)' }} />
-                <span>+1 (800) 892-LUXE</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#44403c' }}>
-                <Mail size={16} style={{ color: 'var(--gold)' }} />
-                <span>concierge@luxehaven.com</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#44403c' }}>
-                <MapPin size={16} style={{ color: 'var(--gold)' }} />
-                <span>Mayfair, London • 5th Ave, NY</span>
-              </div>
+            <div style={headingStyle}>24/7 Global Concierge</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '22px' }}>
+              {[
+                { icon: <Phone size={14} />, text: '+1 (800) 892-LUXE' },
+                { icon: <Mail size={14} />,  text: 'concierge@luxehaven.com' },
+                { icon: <MapPin size={14} />,text: 'Mayfair, London • 5th Ave, NY' },
+              ].map(({ icon, text }) => (
+                <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'rgba(255,255,255,0.58)', fontSize: '0.87rem' }}>
+                  <span style={{ color: 'var(--gold)', flexShrink: 0 }}>{icon}</span>
+                  {text}
+                </div>
+              ))}
             </div>
-
-            <div style={{ marginTop: '20px', padding: '12px', background: '#f4ede2', borderRadius: '8px', border: '1px solid #e8e0d2' }}>
-              <span style={{ fontSize: '0.78rem', color: '#57534e', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
-                <ShieldCheck size={16} style={{ color: 'var(--gold)' }} /> Verified 5-Star Hospitality
-              </span>
+            <div style={{
+              padding: '12px 14px',
+              background: 'rgba(184,145,58,0.1)',
+              borderRadius: '10px',
+              border: '1px solid rgba(184,145,58,0.2)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '0.78rem', color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>
+                <ShieldCheck size={14} style={{ color: 'var(--gold)' }} />
+                Verified 5-Star Hospitality
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Copyright & Security */}
+        {/* Bottom Bar */}
         <div style={{
-          borderTop: '1px solid #e8e2d5',
-          paddingTop: '30px',
-          display: 'flex',
-          flexWrap: 'wrap',
+          borderTop:  '1px solid rgba(255,255,255,0.08)',
+          paddingTop: '28px',
+          display:    'flex',
+          flexWrap:   'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '16px',
-          fontSize: '0.82rem',
-          color: '#78716c'
+          gap:        '14px',
+          fontSize:   '0.8rem',
+          color:      'rgba(255,255,255,0.3)',
         }}>
-          <p style={{ margin: 0 }}>
-            © {new Date().getFullYear()} LuxeHaven Hotels & Resorts Group. All Rights Reserved.
-          </p>
-
-          <div style={{ display: 'flex', gap: '20px' }}>
-            <a href="#" style={{ color: '#78716c' }}>Privacy Policy</a>
-            <a href="#" style={{ color: '#78716c' }}>Terms of Service</a>
-            <a href="#" style={{ color: '#78716c' }}>Cookie Preferences</a>
-            <a href="#" style={{ color: '#78716c' }}>Security Verification</a>
+          <span>© {new Date().getFullYear()} LuxeHaven Hotels &amp; Resorts Group. All rights reserved.</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+            {['Privacy Policy','Terms of Service','Cookie Preferences','Security'].map(l => (
+              <a key={l} href="#" style={{ color: 'rgba(255,255,255,0.3)', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--gold)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.3)'}
+              >{l}</a>
+            ))}
           </div>
         </div>
       </div>

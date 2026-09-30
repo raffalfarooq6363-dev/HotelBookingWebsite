@@ -38,7 +38,7 @@ export default function SpecialOffers({ onCopyCode }) {
               style={{
                 borderRadius: '16px',
                 border: '1px solid var(--border-subtle)',
-                background: '#faf8f5',
+                background: '#f6f9f8',
                 padding: '30px',
                 position: 'relative',
                 display: 'flex',
@@ -53,7 +53,7 @@ export default function SpecialOffers({ onCopyCode }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                   <span style={{
                     background: 'var(--gold-light)',
-                    color: '#9c6c1a',
+                    color: '#3d6b5e',
                     border: '1px solid var(--gold-border)',
                     padding: '4px 10px',
                     borderRadius: '6px',
@@ -110,7 +110,7 @@ export default function SpecialOffers({ onCopyCode }) {
                     padding: '6px 12px',
                     borderRadius: '6px',
                     background: copiedId === offer.id ? '#ecfdf5' : 'var(--gold-light)',
-                    color: copiedId === offer.id ? '#065f46' : '#9c6c1a',
+                    color: copiedId === offer.id ? '#065f46' : '#3d6b5e',
                     fontSize: '0.8rem',
                     fontWeight: 700
                   }}

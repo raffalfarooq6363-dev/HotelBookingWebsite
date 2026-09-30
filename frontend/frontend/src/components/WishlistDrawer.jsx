@@ -31,15 +31,15 @@ export default function WishlistDrawer({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '24px',
-          borderBottom: '1px solid rgba(197, 155, 63, 0.3)',
-          background: 'linear-gradient(135deg, #fdfbf7 0%, #f4ede0 100%)',
-          color: '#1c1917'
+          borderBottom: '1px solid rgba(89, 135, 125, 0.3)',
+          background: 'linear-gradient(135deg, #f0f7f4 0%, #e0eeea 100%)',
+          color: '#1a2e28'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Heart size={22} style={{ color: '#ef4444', fill: '#ef4444' }} />
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#1c1917', fontFamily: 'var(--font-serif)' }}>Saved Favorites</h3>
-              <p style={{ margin: 0, fontSize: '0.8rem', color: '#57534e' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#1a2e28', fontFamily: 'var(--font-serif)' }}>Saved Favorites</h3>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: '#5a7a70' }}>
                 {wishlist.length} {wishlist.length === 1 ? 'saved property' : 'saved properties'}
               </p>
             </div>
@@ -47,9 +47,9 @@ export default function WishlistDrawer({
           <button
             onClick={onClose}
             style={{
-              color: '#57534e',
+              color: '#5a7a70',
               background: '#ffffff',
-              border: '1px solid #e7e0d3',
+              border: '1px solid #d4e4dd',
               padding: '6px',
               borderRadius: '50%',
               display: 'flex',

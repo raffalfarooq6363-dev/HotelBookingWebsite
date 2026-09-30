@@ -34,7 +34,7 @@ export default function FilterSidebar({
       }}
     >
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1ede6', paddingBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #d4e4dd', paddingBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Filter size={18} style={{ color: 'var(--gold)' }} />
           <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Filter Stays</h3>
@@ -72,7 +72,7 @@ export default function FilterSidebar({
                 border: '1px solid',
                 borderColor: filters.category === cat ? 'var(--gold)' : 'var(--border-subtle)',
                 background: filters.category === cat ? 'var(--gold-light)' : '#ffffff',
-                color: filters.category === cat ? '#9c6c1a' : 'var(--text-muted)',
+                color: filters.category === cat ? '#3d6b5e' : 'var(--text-muted)',
                 transition: 'all 0.2s ease'
               }}
             >
@@ -137,8 +137,8 @@ export default function FilterSidebar({
                 fontWeight: 600,
                 border: '1px solid',
                 borderColor: filters.minRating === r.val ? 'var(--gold)' : 'var(--border-subtle)',
-                background: filters.minRating === r.val ? 'var(--gold-light)' : '#faf8f5',
-                color: filters.minRating === r.val ? '#9c6c1a' : 'var(--text-muted)'
+                background: filters.minRating === r.val ? 'var(--gold-light)' : '#f6f9f8',
+                color: filters.minRating === r.val ? '#3d6b5e' : 'var(--text-muted)'
               }}
             >
               {r.val > 0 && <Star size={13} style={{ fill: '#eab308', color: '#eab308' }} />}

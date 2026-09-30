@@ -1,8 +1,8 @@
-import React from 'react';
-import { Star, Quote, CheckCircle } from 'lucide-react';
-import { TESTIMONIALS } from '../data/hotelsData';
+import React, { useState } from 'react';
+import { Star, Quote, CheckCircle, Edit3 } from 'lucide-react';
+import { TESTIMONIALS as INITIAL_TESTIMONIALS } from '../data/hotelsData';
 
-export default function Testimonials() {
+export default function Testimonials({ onOpenReviewModal }) {
   return (
     <section id="reviews" className="section-padding" style={{ backgroundColor: 'var(--bg-cream)' }}>
       <div className="container">
@@ -12,6 +12,15 @@ export default function Testimonials() {
           <p className="section-description">
             Read authentic reviews from guests who made LuxeHaven their home away from home across the globe.
           </p>
+          <div style={{ marginTop: '20px' }}>
+            <button
+              onClick={onOpenReviewModal}
+              className="btn-outline"
+              style={{ padding: '10px 22px', fontSize: '0.88rem' }}
+            >
+              <Edit3 size={15} /> Write a Review
+            </button>
+          </div>
         </div>
 
         {/* Testimonials Grid */}
@@ -21,7 +30,7 @@ export default function Testimonials() {
           gap: '24px',
           marginBottom: '50px'
         }}>
-          {TESTIMONIALS.map((t) => (
+          {INITIAL_TESTIMONIALS.map((t) => (
             <div
               key={t.id}
               className="luxury-card"
@@ -62,7 +71,7 @@ export default function Testimonials() {
                 alignItems: 'center',
                 gap: '14px',
                 paddingTop: '16px',
-                borderTop: '1px solid #f1ede6'
+                borderTop: '1px solid var(--border-subtle)'
               }}>
                 <img
                   src={t.avatar}
@@ -88,44 +97,45 @@ export default function Testimonials() {
 
         {/* Global Statistics Banner */}
         <div style={{
-          background: '#0f172a',
-          borderRadius: '16px',
+          background: 'var(--primary)',
+          borderRadius: 'var(--radius-lg)',
           padding: '36px',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '24px',
           textAlign: 'center',
-          color: '#ffffff'
+          color: '#ffffff',
+          boxShadow: 'var(--shadow-lg)'
         }}>
           <div>
-            <h3 style={{ fontSize: '2.4rem', color: 'var(--gold)', margin: 0, fontFamily: 'var(--font-serif)' }}>
+            <h3 style={{ fontSize: '2.4rem', color: 'var(--gold-bright)', margin: 0, fontFamily: 'var(--font-serif)' }}>
               4.96 / 5.0
             </h3>
-            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--primary-pale)' }}>
               Average Guest Rating
             </p>
           </div>
           <div>
-            <h3 style={{ fontSize: '2.4rem', color: 'var(--gold)', margin: 0, fontFamily: 'var(--font-serif)' }}>
+            <h3 style={{ fontSize: '2.4rem', color: 'var(--gold-bright)', margin: 0, fontFamily: 'var(--font-serif)' }}>
               99.2%
             </h3>
-            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--primary-pale)' }}>
               Guest Return & Recommendation
             </p>
           </div>
           <div>
-            <h3 style={{ fontSize: '2.4rem', color: 'var(--gold)', margin: 0, fontFamily: 'var(--font-serif)' }}>
+            <h3 style={{ fontSize: '2.4rem', color: 'var(--gold-bright)', margin: 0, fontFamily: 'var(--font-serif)' }}>
               45,000+
             </h3>
-            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--primary-pale)' }}>
               Discerning Guests Welcomed
             </p>
           </div>
           <div>
-            <h3 style={{ fontSize: '2.4rem', color: 'var(--gold)', margin: 0, fontFamily: 'var(--font-serif)' }}>
+            <h3 style={{ fontSize: '2.4rem', color: 'var(--gold-bright)', margin: 0, fontFamily: 'var(--font-serif)' }}>
               24 / 7
             </h3>
-            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--primary-pale)' }}>
               Bespoke Private Butler Care
             </p>
           </div>

@@ -32,15 +32,15 @@ export default function MyBookingsDrawer({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '24px',
-          borderBottom: '1px solid rgba(197, 155, 63, 0.3)',
-          background: 'linear-gradient(135deg, #fdfbf7 0%, #f4ede0 100%)',
-          color: '#1c1917'
+          borderBottom: '1px solid rgba(89, 135, 125, 0.3)',
+          background: 'linear-gradient(135deg, #f0f7f4 0%, #e0eeea 100%)',
+          color: '#1a2e28'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Briefcase size={22} style={{ color: 'var(--gold)' }} />
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#1c1917', fontFamily: 'var(--font-serif)' }}>My Reservations</h3>
-              <p style={{ margin: 0, fontSize: '0.8rem', color: '#57534e' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#1a2e28', fontFamily: 'var(--font-serif)' }}>My Reservations</h3>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: '#5a7a70' }}>
                 {bookings.length} {bookings.length === 1 ? 'active booking' : 'active bookings'}
               </p>
             </div>
@@ -48,9 +48,9 @@ export default function MyBookingsDrawer({
           <button
             onClick={onClose}
             style={{
-              color: '#57534e',
+              color: '#5a7a70',
               background: '#ffffff',
-              border: '1px solid #e7e0d3',
+              border: '1px solid #d4e4dd',
               padding: '6px',
               borderRadius: '50%',
               display: 'flex',
@@ -88,7 +88,7 @@ export default function MyBookingsDrawer({
                 style={{
                   border: '1px solid #e2e8f0',
                   borderRadius: '12px',
-                  background: '#faf8f5',
+                  background: '#f6f9f8',
                   overflow: 'hidden',
                   boxShadow: 'var(--shadow-subtle)'
                 }}
@@ -96,11 +96,11 @@ export default function MyBookingsDrawer({
                 {/* Header with Reference & Status */}
                 <div style={{
                   padding: '12px 16px',
-                  background: '#f1ede6',
+                  background: '#edf5f2',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  borderBottom: '1px solid #e5dfd5'
+                  borderBottom: '1px solid #d4e4dd'
                 }}>
                   <span style={{ fontSize: '0.78rem', fontFamily: 'monospace', fontWeight: 700, color: 'var(--primary)' }}>
                     Ref: {booking.id}
@@ -155,7 +155,7 @@ export default function MyBookingsDrawer({
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     paddingTop: '12px',
-                    borderTop: '1px solid #e9e3d8'
+                    borderTop: '1px solid #d4e4dd'
                   }}>
                     <button
                       onClick={() => onViewVoucher(booking)}
