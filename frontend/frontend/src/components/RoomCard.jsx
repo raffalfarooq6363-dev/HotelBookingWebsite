@@ -270,7 +270,7 @@ export default function RoomCard({
           color: 'var(--text-muted)',
           marginBottom: '16px',
           paddingBottom: '14px',
-          borderBottom: '1px solid #f1ede6'
+          borderBottom: '1px solid #d4e4dd'
         }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Users size={14} /> Up to {room.maxGuests} guests
@@ -290,8 +290,8 @@ export default function RoomCard({
               key={idx}
               style={{
                 fontSize: '0.72rem',
-                background: '#faf6ee',
-                color: '#8c631a',
+                background: '#edf5f2',
+                color: '#3d6b5e',
                 padding: '3px 8px',
                 borderRadius: '4px',
                 fontWeight: 600

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Lock, Mail, User, AlertCircle } from 'lucide-react';
 import { api } from '../services/api';
 
 export default function AuthModal({
@@ -38,27 +38,6 @@ export default function AuthModal({
     }
   };
 
-  const handleDemoLogin = async () => {
-    setErrorMessage('');
-    setLoading(true);
-    try {
-      const result = await api.demoLogin();
-      onLoginSuccess(result.user);
-      onClose();
-    } catch {
-      // Fallback
-      const demoUser = {
-        name: 'Victoria Sterling',
-        email: 'victoria.sterling@luxehaven.com',
-        membershipTier: 'Diamond Ambassador'
-      };
-      onLoginSuccess(demoUser);
-      onClose();
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div 
@@ -69,10 +48,10 @@ export default function AuthModal({
         {/* Header - Luminous Champagne Ivory */}
         <div style={{
           padding: '26px 24px',
-          background: 'linear-gradient(135deg, #fdfbf7 0%, #f4ede0 100%)',
-          color: '#1c1917',
+          background: 'linear-gradient(135deg, #f0f7f4 0%, #e0eeea 100%)',
+          color: '#1a2e28',
           position: 'relative',
-          borderBottom: '1px solid rgba(197, 155, 63, 0.3)'
+          borderBottom: '1px solid rgba(89, 135, 125, 0.3)'
         }}>
           <button
             onClick={onClose}
@@ -80,9 +59,9 @@ export default function AuthModal({
               position: 'absolute',
               top: '18px',
               right: '18px',
-              color: '#57534e',
+              color: '#5a7a70',
               background: '#ffffff',
-              border: '1px solid #e7e0d3',
+              border: '1px solid #d4e4dd',
               padding: '6px',
               borderRadius: '50%',
               display: 'flex',
@@ -95,10 +74,10 @@ export default function AuthModal({
           <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: 700 }}>
             LuxeClub Membership
           </span>
-          <h3 style={{ margin: '4px 0 0 0', fontSize: '1.4rem', color: '#1c1917', fontFamily: 'var(--font-serif)' }}>
+          <h3 style={{ margin: '4px 0 0 0', fontSize: '1.4rem', color: '#1a2e28', fontFamily: 'var(--font-serif)' }}>
             {isRegister ? 'Join LuxeHaven Prestige' : 'Welcome Back'}
           </h3>
-          <p style={{ margin: '4px 0 0 0', fontSize: '0.84rem', color: '#57534e' }}>
+          <p style={{ margin: '4px 0 0 0', fontSize: '0.84rem', color: '#5a7a70' }}>
             Unlock exclusive member rates, early check-in, and complimentary upgrades.
           </p>
         </div>
@@ -179,32 +158,17 @@ export default function AuthModal({
             </button>
           </form>
 
-          {/* Quick Demo Sign In Button */}
-          <div style={{ margin: '18px 0', textAlign: 'center', position: 'relative' }}>
-            <div style={{ height: '1px', background: '#e2e8f0', width: '100%' }} />
-            <span style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: '#ffffff',
-              padding: '0 12px',
-              fontSize: '0.75rem',
-              color: '#94a3b8',
-              fontWeight: 600
-            }}>
-              OR
-            </span>
-          </div>
-
           <button
             type="button"
-            onClick={handleDemoLogin}
+            onClick={() => {
+              setIsRegister(!isRegister);
+              setErrorMessage('');
+            }}
             className="btn-outline"
             style={{ width: '100%', justifyContent: 'center' }}
           >
-            <Sparkles size={16} style={{ color: 'var(--gold)' }} />
-            One-Click Demo VIP Sign In
+            <User size={16} style={{ color: 'var(--gold)' }} />
+            {isRegister ? 'Back to Sign In' : 'Register'}
           </button>
 
           <p style={{ textAlign: 'center', margin: '20px 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>

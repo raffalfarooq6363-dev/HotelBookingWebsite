@@ -49,15 +49,16 @@ export default function SearchConsole({
   return (
     <div
       style={{
-        background: '#ffffff',
-        borderRadius: '16px',
-        padding: '16px 20px',
-        boxShadow: '0 20px 50px rgba(180, 160, 120, 0.15)',
-        border: '1px solid rgba(197, 155, 63, 0.35)',
+        background: 'rgba(255,255,255,0.98)',
+        borderRadius: '18px',
+        padding: '18px 22px',
+        boxShadow: '0 24px 60px rgba(15,32,68,0.22)',
+        border: '1px solid rgba(184,145,58,0.3)',
         width: '100%',
         maxWidth: '1180px',
         margin: '0 auto',
-        position: 'relative'
+        position: 'relative',
+        backdropFilter: 'blur(20px)',
       }}
     >
       <form
@@ -74,10 +75,11 @@ export default function SearchConsole({
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          padding: '10px 14px',
-          background: '#faf8f5',
+          padding: '11px 15px',
+          background: 'var(--bg-alt)',
           borderRadius: '10px',
-          border: '1px solid #e9e3d8'
+          border: '1px solid var(--border)',
+          transition: 'border-color 0.2s ease',
         }}>
           <label style={{
             fontSize: '0.72rem',
@@ -117,10 +119,11 @@ export default function SearchConsole({
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          padding: '10px 14px',
-          background: '#faf8f5',
+          padding: '11px 15px',
+          background: 'var(--bg-alt)',
           borderRadius: '10px',
-          border: '1px solid #e9e3d8'
+          border: '1px solid var(--border)',
+          transition: 'border-color 0.2s ease',
         }}>
           <label style={{
             fontSize: '0.72rem',
@@ -156,10 +159,11 @@ export default function SearchConsole({
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          padding: '10px 14px',
-          background: '#faf8f5',
+          padding: '11px 15px',
+          background: 'var(--bg-alt)',
           borderRadius: '10px',
-          border: '1px solid #e9e3d8'
+          border: '1px solid var(--border)',
+          transition: 'border-color 0.2s ease',
         }}>
           <label style={{
             fontSize: '0.72rem',
@@ -176,8 +180,8 @@ export default function SearchConsole({
               <Calendar size={13} /> Check-Out
             </span>
             <span style={{
-              background: 'rgba(200, 155, 63, 0.15)',
-              color: '#9c6c1a',
+              background: 'rgba(89, 135, 125, 0.15)',
+              color: '#3d6b5e',
               padding: '1px 6px',
               borderRadius: '4px',
               fontSize: '0.68rem',
@@ -210,11 +214,12 @@ export default function SearchConsole({
             style={{
               display: 'flex',
               flexDirection: 'column',
-              padding: '10px 14px',
-              background: '#faf8f5',
+              padding: '11px 15px',
+              background: 'var(--bg-alt)',
               borderRadius: '10px',
-              border: '1px solid #e9e3d8',
-              cursor: 'pointer'
+              border: '1px solid var(--border)',
+              cursor: 'pointer',
+              transition: 'border-color 0.2s ease',
             }}
           >
             <label style={{
@@ -248,7 +253,7 @@ export default function SearchConsole({
                 left: 0,
                 right: 0,
                 background: '#ffffff',
-                border: '1px solid rgba(200, 155, 63, 0.3)',
+                border: '1px solid rgba(89, 135, 125, 0.3)',
                 borderRadius: '12px',
                 padding: '18px',
                 boxShadow: '0 15px 35px rgba(0,0,0,0.18)',

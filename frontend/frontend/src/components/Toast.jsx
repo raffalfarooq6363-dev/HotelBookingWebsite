@@ -19,7 +19,7 @@ export default function Toast({ toasts, onDismiss }) {
       {toasts.map((toast) => {
         let Icon = CheckCircle2;
         let bgColor = '#0f172a';
-        let iconColor = '#c89b3f';
+        let iconColor = '#59877D';
 
         if (toast.type === 'error') {
           Icon = AlertCircle;

@@ -188,24 +188,24 @@ export default function BookingModal({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '22px 28px',
-          borderBottom: '1px solid rgba(197, 155, 63, 0.3)',
-          background: 'linear-gradient(135deg, #fdfbf7 0%, #f4ede0 100%)',
-          color: '#1c1917'
+          borderBottom: '1px solid rgba(89, 135, 125, 0.3)',
+          background: 'linear-gradient(135deg, #f0f7f4 0%, #e0eeea 100%)',
+          color: '#1a2e28'
         }}>
           <div>
             <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: 700 }}>
               {step === 5 ? 'Reservation Confirmed' : 'LuxeHaven Reservation'}
             </span>
-            <h3 style={{ margin: '4px 0 0 0', fontSize: '1.35rem', color: '#1c1917', fontFamily: 'var(--font-serif)' }}>
+            <h3 style={{ margin: '4px 0 0 0', fontSize: '1.35rem', color: '#1a2e28', fontFamily: 'var(--font-serif)' }}>
               {step === 5 ? 'Booking Voucher & Details' : room.name}
             </h3>
           </div>
           <button
             onClick={onClose}
             style={{
-              color: '#57534e',
+              color: '#5a7a70',
               background: '#ffffff',
-              border: '1px solid #e7e0d3',
+              border: '1px solid #d4e4dd',
               padding: '8px',
               borderRadius: '50%',
               display: 'flex',
@@ -220,9 +220,9 @@ export default function BookingModal({
         {step < 5 && (
           <div style={{
             display: 'flex',
-            background: '#faf8f5',
+            background: '#f6f9f8',
             padding: '12px 28px',
-            borderBottom: '1px solid #f1ede6',
+            borderBottom: '1px solid #d4e4dd',
             justifyContent: 'space-between'
           }}>
             {[
@@ -272,10 +272,10 @@ export default function BookingModal({
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
                 gap: '20px',
-                background: '#faf8f5',
+                background: '#f6f9f8',
                 borderRadius: '12px',
                 padding: '16px',
-                border: '1px solid #e9e3d8'
+                border: '1px solid #d4e4dd'
               }}>
                 <img
                   src={room.images[0]}
@@ -532,10 +532,10 @@ export default function BookingModal({
 
               {/* Promo code bar */}
               <div style={{
-                background: '#faf8f5',
+                background: '#f6f9f8',
                 padding: '16px',
                 borderRadius: '10px',
-                border: '1px solid #e9e3d8'
+                border: '1px solid #d4e4dd'
               }}>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <Tag size={16} style={{ color: 'var(--gold)' }} />
@@ -630,7 +630,7 @@ export default function BookingModal({
                       border: '1px solid',
                       borderColor: paymentMethod === method ? 'var(--gold)' : '#cbd5e1',
                       background: paymentMethod === method ? 'var(--gold-light)' : '#ffffff',
-                      color: paymentMethod === method ? '#9c6c1a' : 'var(--text-main)',
+                      color: paymentMethod === method ? '#3d6b5e' : 'var(--text-main)',
                       fontWeight: 700,
                       fontSize: '0.85rem'
                     }}
@@ -732,12 +732,12 @@ export default function BookingModal({
                 style={{
                   border: '2px dashed var(--gold-border)',
                   borderRadius: '16px',
-                  background: '#fcfaf7',
+                  background: '#f0f7f4',
                   padding: '24px',
                   position: 'relative'
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e9e3d8', paddingBottom: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #d4e4dd', paddingBottom: '16px', marginBottom: '16px' }}>
                   <div>
                     <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--gold)', fontWeight: 700 }}>
                       Official Reservation Voucher
@@ -796,11 +796,11 @@ export default function BookingModal({
                 )}
 
                 <div style={{
-                  background: 'rgba(200, 155, 63, 0.08)',
+                  background: 'rgba(89, 135, 125, 0.08)',
                   padding: '10px 14px',
                   borderRadius: '8px',
                   fontSize: '0.78rem',
-                  color: '#9c6c1a',
+                  color: '#3d6b5e',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px'

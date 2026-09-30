@@ -39,24 +39,24 @@ export default function RoomDetailModal({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '20px 28px',
-          borderBottom: '1px solid rgba(197, 155, 63, 0.3)',
-          background: 'linear-gradient(135deg, #fdfbf7 0%, #f4ede0 100%)',
-          color: '#1c1917'
+          borderBottom: '1px solid rgba(89, 135, 125, 0.3)',
+          background: 'linear-gradient(135deg, #f0f7f4 0%, #e0eeea 100%)',
+          color: '#1a2e28'
         }}>
           <div>
             <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--gold)', fontWeight: 700 }}>
               {room.category} • {room.destinationName}
             </span>
-            <h3 style={{ margin: '3px 0 0 0', fontSize: '1.4rem', color: '#1c1917', fontFamily: 'var(--font-serif)' }}>
+            <h3 style={{ margin: '3px 0 0 0', fontSize: '1.4rem', color: '#1a2e28', fontFamily: 'var(--font-serif)' }}>
               {room.name}
             </h3>
           </div>
           <button
             onClick={onClose}
             style={{
-              color: '#57534e',
+              color: '#5a7a70',
               background: '#ffffff',
-              border: '1px solid #e7e0d3',
+              border: '1px solid #d4e4dd',
               padding: '8px',
               borderRadius: '50%',
               display: 'flex',
@@ -150,25 +150,25 @@ export default function RoomDetailModal({
             gap: '12px',
             marginBottom: '28px'
           }}>
-            <div style={{ background: '#faf8f5', padding: '12px', borderRadius: '10px', border: '1px solid #e9e3d8' }}>
+            <div style={{ background: '#f6f9f8', padding: '12px', borderRadius: '10px', border: '1px solid #d4e4dd' }}>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Size</span>
               <p style={{ margin: '4px 0 0 0', fontWeight: 700, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Maximize2 size={15} style={{ color: 'var(--gold)' }} /> {room.sizeSqM} m² / {Math.round(room.sizeSqM * 10.76)} sqft
               </p>
             </div>
-            <div style={{ background: '#faf8f5', padding: '12px', borderRadius: '10px', border: '1px solid #e9e3d8' }}>
+            <div style={{ background: '#f6f9f8', padding: '12px', borderRadius: '10px', border: '1px solid #d4e4dd' }}>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Occupancy</span>
               <p style={{ margin: '4px 0 0 0', fontWeight: 700, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Users size={15} style={{ color: 'var(--gold)' }} /> Up to {room.maxGuests} Guests
               </p>
             </div>
-            <div style={{ background: '#faf8f5', padding: '12px', borderRadius: '10px', border: '1px solid #e9e3d8' }}>
+            <div style={{ background: '#f6f9f8', padding: '12px', borderRadius: '10px', border: '1px solid #d4e4dd' }}>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Bed Arrangement</span>
               <p style={{ margin: '4px 0 0 0', fontWeight: 700, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Bed size={15} style={{ color: 'var(--gold)' }} /> {room.bedType}
               </p>
             </div>
-            <div style={{ background: '#faf8f5', padding: '12px', borderRadius: '10px', border: '1px solid #e9e3d8' }}>
+            <div style={{ background: '#f6f9f8', padding: '12px', borderRadius: '10px', border: '1px solid #d4e4dd' }}>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Guest Rating</span>
               <p style={{ margin: '4px 0 0 0', fontWeight: 700, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Star size={15} style={{ color: '#eab308', fill: '#eab308' }} /> {room.rating} / 5.0 ({room.reviewsCount})
@@ -211,10 +211,10 @@ export default function RoomDetailModal({
 
           {/* Policies & Peace of Mind */}
           <div style={{
-            background: '#faf8f5',
+            background: '#f6f9f8',
             padding: '20px',
             borderRadius: '12px',
-            border: '1px solid #e9e3d8',
+            border: '1px solid #d4e4dd',
             marginBottom: '28px'
           }}>
             <h5 style={{ fontSize: '0.95rem', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -233,7 +233,7 @@ export default function RoomDetailModal({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderTop: '1px solid #e2e8f0',
+            borderTop: '1px solid #d4e4dd',
             paddingTop: '20px'
           }}>
             <div>

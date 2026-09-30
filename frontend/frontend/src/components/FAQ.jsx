@@ -31,7 +31,7 @@ export default function FAQ() {
                   border: '1px solid',
                   borderColor: isOpen ? 'var(--gold-border)' : 'var(--border-subtle)',
                   borderRadius: '12px',
-                  background: isOpen ? '#fcfaf7' : '#ffffff',
+                  background: isOpen ? '#f0f7f4' : '#ffffff',
                   overflow: 'hidden',
                   transition: 'all 0.25s ease'
                 }}

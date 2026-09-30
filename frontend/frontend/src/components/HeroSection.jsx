@@ -1,127 +1,154 @@
 import React from 'react';
-import { ShieldCheck, Award, Clock, Sparkles } from 'lucide-react';
+import { ShieldCheck, Award, Clock, Sparkles, ArrowRight } from 'lucide-react';
 import SearchConsole from './SearchConsole';
 
-export default function HeroSection({
-  searchFilters,
-  setSearchFilters,
-  onPerformSearch
-}) {
+export default function HeroSection({ searchFilters, setSearchFilters, onPerformSearch }) {
   return (
-    <section
-      style={{
-        position: 'relative',
-        minHeight: '88vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        paddingTop: 'calc(var(--nav-height) + 50px)',
-        paddingBottom: '80px',
-        backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.3) 35%, rgba(250, 248, 245, 0.85) 75%, var(--bg-cream) 100%), url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=2200&q=85')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center 40%',
-        color: '#1c1917'
-      }}
-    >
-      <div className="container" style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
-        {/* Top Luxury Pill */}
+    <section style={{
+      position:   'relative',
+      minHeight:  '92vh',
+      display:    'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      paddingTop: 'calc(var(--nav-height) + 40px)',
+      paddingBottom: '80px',
+      overflow:   'hidden',
+    }}>
+      {/* Background Image */}
+      <div style={{
+        position:   'absolute',
+        inset:      0,
+        backgroundImage: `url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=2200&q=90')`,
+        backgroundSize:     'cover',
+        backgroundPosition: 'center 45%',
+        zIndex: 0,
+      }} />
+
+      {/* Gradient Overlays */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 1,
+        background: 'linear-gradient(135deg, rgba(8,15,30,0.75) 0%, rgba(15,32,68,0.6) 50%, rgba(8,15,30,0.45) 100%)',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%', zIndex: 2,
+        background: 'linear-gradient(to top, var(--bg-main) 0%, transparent 100%)',
+      }} />
+
+      {/* Decorative gold line */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '3px', zIndex: 3,
+        background: 'var(--gold-gradient)',
+      }} />
+
+      {/* Content */}
+      <div className="container" style={{ position: 'relative', zIndex: 5, textAlign: 'center' }}>
+
+        {/* Top Pill Badge */}
         <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: 'rgba(255, 255, 255, 0.88)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(197, 155, 63, 0.45)',
-          padding: '7px 20px',
+          display:      'inline-flex',
+          alignItems:   'center',
+          gap:          '8px',
+          background:   'rgba(255,255,255,0.1)',
+          backdropFilter: 'blur(16px)',
+          border:       '1px solid rgba(184,145,58,0.5)',
+          padding:      '7px 22px',
           borderRadius: 'var(--radius-full)',
-          marginBottom: '22px',
-          boxShadow: '0 4px 20px rgba(197, 155, 63, 0.15)'
+          marginBottom: '28px',
         }}>
-          <Sparkles size={16} style={{ color: 'var(--gold)' }} />
+          <Sparkles size={14} style={{ color: 'var(--gold-bright)' }} />
           <span style={{
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            letterSpacing: '0.18em',
+            fontSize:      '0.73rem',
+            fontWeight:    700,
+            letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            color: '#8b5e14'
+            color:         'var(--gold-bright)',
           }}>
             World's Leading Luxury Hotel Collection
           </span>
         </div>
 
-        {/* Hero Title */}
+        {/* Main Heading */}
         <h1 style={{
-          fontSize: 'clamp(2.5rem, 5.5vw, 4.3rem)',
-          lineHeight: 1.15,
-          fontWeight: 700,
-          color: '#1c1917',
-          maxWidth: '920px',
-          margin: '0 auto 20px auto',
+          fontSize:      'clamp(2.6rem, 5.5vw, 4.8rem)',
+          lineHeight:    1.12,
+          fontWeight:    700,
+          color:         '#ffffff',
+          maxWidth:      '960px',
+          margin:        '0 auto 22px',
           letterSpacing: '-0.02em',
-          textShadow: '0 2px 20px rgba(255,255,255,0.8)'
+          textShadow:    '0 4px 30px rgba(0,0,0,0.3)',
         }}>
-          Where Elegance Meets Extraordinary Escapes
+          Where Elegance Meets{' '}
+          <span style={{
+            background:  'var(--gold-gradient)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>
+            Extraordinary Escapes
+          </span>
         </h1>
 
-        {/* Hero Subtitle */}
+        {/* Subtitle */}
         <p style={{
-          fontSize: 'clamp(1.05rem, 1.8vw, 1.25rem)',
-          color: '#44403c',
-          maxWidth: '720px',
-          margin: '0 auto 40px auto',
-          fontWeight: 450,
-          lineHeight: 1.65
+          fontSize:   'clamp(1rem, 1.8vw, 1.2rem)',
+          color:      'rgba(255,255,255,0.72)',
+          maxWidth:   '680px',
+          margin:     '0 auto 44px',
+          lineHeight: 1.7,
+          fontWeight: 400,
         }}>
-          Discover overwater private sanctuaries, alpine timber chalets, and Parisian landmark suites tailored for unforgettable moments.
+          Discover overwater villas, alpine chalets, and Parisian landmark suites — curated for those who expect nothing less than perfection.
         </p>
 
-        {/* Interactive Search Console */}
-        <div style={{ marginTop: '24px' }}>
-          <SearchConsole
-            searchFilters={searchFilters}
-            setSearchFilters={setSearchFilters}
-            onPerformSearch={onPerformSearch}
-          />
+        {/* Search Console */}
+        <SearchConsole
+          searchFilters={searchFilters}
+          setSearchFilters={setSearchFilters}
+          onPerformSearch={onPerformSearch}
+        />
+
+        {/* Trust Badges */}
+        <div style={{
+          display:       'flex',
+          flexWrap:      'wrap',
+          justifyContent:'center',
+          gap:           '12px',
+          marginTop:     '48px',
+        }}>
+          {[
+            { icon: <Award size={16} />,       text: 'Best Rate Guarantee' },
+            { icon: <Clock size={16} />,        text: 'Free 48h Cancellation' },
+            { icon: <ShieldCheck size={16} />,  text: '100% Verified Stays' },
+            { icon: <Sparkles size={16} />,     text: '24/7 Personal Concierge' },
+          ].map(({ icon, text }) => (
+            <div key={text} style={{
+              display:      'flex',
+              alignItems:   'center',
+              gap:          '8px',
+              background:   'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(12px)',
+              border:       '1px solid rgba(255,255,255,0.18)',
+              borderRadius: 'var(--radius-full)',
+              padding:      '8px 18px',
+            }}>
+              <span style={{ color: 'var(--gold-bright)' }}>{icon}</span>
+              <span style={{ fontSize: '0.83rem', fontWeight: 600, color: 'rgba(255,255,255,0.88)', whiteSpace: 'nowrap' }}>
+                {text}
+              </span>
+            </div>
+          ))}
         </div>
 
-        {/* Key Guarantees Bar */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '20px',
-            maxWidth: '1000px',
-            margin: '44px auto 0 auto',
-            paddingTop: '20px'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-            <Award size={20} style={{ color: 'var(--gold)' }} />
-            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#292524' }}>
-              Best Rate Guarantee
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-            <Clock size={20} style={{ color: 'var(--gold)' }} />
-            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#292524' }}>
-              Flexible 48h Cancellation
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-            <ShieldCheck size={20} style={{ color: 'var(--gold)' }} />
-            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#292524' }}>
-              100% Verified Luxury Stays
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-            <Sparkles size={20} style={{ color: 'var(--gold)' }} />
-            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#292524' }}>
-              24/7 Personal Concierge
-            </span>
-          </div>
+        {/* Scroll indicator */}
+        <div style={{ marginTop: '52px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)' }}>
+            Explore Collection
+          </span>
+          <div style={{
+            width: '1.5px', height: '42px',
+            background: 'linear-gradient(to bottom, rgba(184,145,58,0.8), transparent)',
+          }} />
         </div>
       </div>
     </section>

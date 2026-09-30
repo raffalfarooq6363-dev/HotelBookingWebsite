@@ -11,15 +11,45 @@ import AuthModal from './components/AuthModal';
 import SpecialOffers from './components/SpecialOffers';
 import Experiences from './components/Experiences';
 import Testimonials from './components/Testimonials';
+import ReviewModal from './components/ReviewModal';
+import ConciergeWidget from './components/ConciergeWidget';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 import Toast from './components/Toast';
+import CustomerDashboard from './components/CustomerDashboard';
+import ManagerDashboard from './components/ManagerDashboard';
+import ManagerAuthPage from './components/ManagerAuthPage';
 
 import { ROOMS_DATA, CURRENCIES } from './data/hotelsData';
 import { api } from './services/api';
 import './App.css';
 
 export default function App() {
+  // ─── Manager Portal Route Detection ───
+  // Supports both /manager path and #manager-portal hash
+  const isManagerRoute = () => {
+    const path = window.location.pathname;
+    const hash = window.location.hash;
+    return (
+      path === '/manager' ||
+      path.startsWith('/manager/') ||
+      hash === '#manager-portal'
+    );
+  };
+
+  const [isManagerPortal, setIsManagerPortal] = useState(() => isManagerRoute());
+
+  // Listen to URL changes (hash + popstate)
+  React.useEffect(() => {
+    const onUrlChange = () => setIsManagerPortal(isManagerRoute());
+    window.addEventListener('hashchange', onUrlChange);
+    window.addEventListener('popstate', onUrlChange);
+    return () => {
+      window.removeEventListener('hashchange', onUrlChange);
+      window.removeEventListener('popstate', onUrlChange);
+    };
+  }, []);
+
   // 1. Currency State
   const [currency, setCurrency] = useState(CURRENCIES[0]);
   const [allRooms, setAllRooms] = useState(ROOMS_DATA);
@@ -119,6 +149,8 @@ export default function App() {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isBookingsOpen, setIsBookingsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [dashboardView, setDashboardView] = useState(null);
 
   // 9. Toast Notifications
   const [toasts, setToasts] = useState([]);
@@ -303,7 +335,9 @@ export default function App() {
     } catch (e) {
       console.warn('Backend cancellation error:', e);
     }
-    setBookings(prev => prev.filter(b => b.id !== bookingId));
+    setBookings(prev => prev.map(booking => (
+      booking.id === bookingId ? { ...booking, status: 'Cancelled' } : booking
+    )));
     addToast('Reservation Cancelled', `Booking reference ${bookingId} has been cancelled with full refund.`, 'info');
   };
 
@@ -320,8 +354,51 @@ export default function App() {
     addToast('Welcome to LuxeClub', `Confirmation transmitted to ${email}. Check your inbox for your 10% welcome privilege!`, 'success');
   };
 
+  const handleOpenDashboard = () => {
+    const isManager = ['admin', 'manager'].includes(currentUser?.role?.toLowerCase());
+    setDashboardView(isManager ? 'manager' : 'customer');
+  };
+
+  const handleLogout = () => {
+    api.logout();
+    setCurrentUser(null);
+    setDashboardView(null);
+    addToast('Signed Out', 'You have been signed out of your LuxeClub account.', 'info');
+  };
+
   return (
     <div className="app-root">
+      {/* ── Manager Portal ── completely separate from customer site */}
+      {isManagerPortal && !['admin', 'manager'].includes(currentUser?.role?.toLowerCase()) && (
+        <ManagerAuthPage
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+            addToast('Welcome, Manager', `Signed in as ${user.name}. Redirecting to dashboard.`, 'success');
+          }}
+          onBackToSite={() => {
+            window.location.hash = '';
+            window.history.pushState({}, '', '/');
+            setIsManagerPortal(false);
+          }}
+        />
+      )}
+
+      {/* If manager is logged in via manager portal, show Manager Dashboard directly */}
+      {isManagerPortal && ['admin', 'manager'].includes(currentUser?.role?.toLowerCase()) && (
+        <ManagerDashboard
+          currentUser={currentUser}
+          onClose={() => {
+            handleLogout();
+            window.location.hash = '';
+            window.history.pushState({}, '', '/');
+            setIsManagerPortal(false);
+          }}
+        />
+      )}
+
+      {/* ── Customer Site ── hidden when manager portal is active */}
+      {!isManagerPortal && (
+        <>
       {/* Toast Notification Layer */}
       <Toast toasts={toasts} onDismiss={removeToast} />
 
@@ -334,14 +411,36 @@ export default function App() {
         onOpenWishlist={() => setIsWishlistOpen(true)}
         onOpenBookings={() => setIsBookingsOpen(true)}
         onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenDashboard={handleOpenDashboard}
         currentUser={currentUser}
-        onLogout={() => {
-          api.logout();
-          setCurrentUser(null);
-          addToast('Signed Out', 'You have been signed out of your LuxeClub account.', 'info');
-        }}
+        onLogout={handleLogout}
       />
 
+      {dashboardView ? (
+        dashboardView === 'manager' ? (
+          <ManagerDashboard currentUser={currentUser} onClose={() => setDashboardView(null)} />
+        ) : (
+          <CustomerDashboard
+            currentUser={currentUser}
+            bookings={bookings}
+            wishlist={wishlist}
+            currency={currency}
+            onCancelBooking={handleCancelBooking}
+            onBookNow={(room) => {
+              setDashboardView(null);
+              setBookingRoom(room);
+            }}
+            onRemoveWishlistItem={(roomId) => {
+              setWishlist(prev => prev.filter(room => room.id !== roomId));
+              addToast('Removed from Wishlist', 'Property removed from saved stays.', 'info');
+            }}
+            onLogout={handleLogout}
+            onClose={() => setDashboardView(null)}
+          />
+        )
+      ) : null}
+
+      {!dashboardView && <>
       {/* Hero with Integrated Search Console */}
       <HeroSection
         searchFilters={searchFilters}
@@ -382,7 +481,7 @@ export default function App() {
       />
 
       {/* Guest Reviews & Statistics */}
-      <Testimonials />
+      <Testimonials onOpenReviewModal={() => setIsReviewOpen(true)} />
 
       {/* Frequently Asked Questions */}
       <FAQ />
@@ -454,6 +553,28 @@ export default function App() {
           addToast('Welcome back', `Logged in as ${user.name} (${user.membershipTier}).`, 'success');
         }}
       />
+
+      {/* Review Submission Modal */}
+      <ReviewModal
+        isOpen={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
+        onSubmitReview={(newReview) => {
+          addToast('Review Submitted', 'Thank you! Your verified story has been recorded.', 'success');
+        }}
+      />
+
+      {/* Floating VIP Concierge Assistant */}
+      <ConciergeWidget
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onExploreCatalog={() => {
+          const element = document.getElementById('catalog');
+          if (element) element.scrollIntoView({ behavior: 'smooth' });
+        }}
+        onCopyCode={handleCopyCode}
+      />
+      </>}
+      </>
+      )}
     </div>
   );
 }
