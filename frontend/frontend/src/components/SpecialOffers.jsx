@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import { Tag, Sparkles, Copy, Check, ArrowRight } from 'lucide-react';
 import { SPECIAL_OFFERS } from '../data/hotelsData';
 
-export default function SpecialOffers({ onCopyCode }) {
+export default function SpecialOffers({ onCopyCode, metaData, offersList }) {
   const [copiedId, setCopiedId] = useState(null);
+  const list = offersList && offersList.length > 0 ? offersList : SPECIAL_OFFERS;
+
+  const subtitle = metaData?.subtitle || 'Exclusive Privileges';
+  const title = metaData?.title || 'Seasonal Offers & Packages';
+  const description = metaData?.description || 'Enhance your luxury itinerary with our limited-edition promotional credits, complimentary nights, and VIP privileges.';
 
   const handleCopy = (offer) => {
     navigator.clipboard.writeText(offer.code);
@@ -20,10 +25,10 @@ export default function SpecialOffers({ onCopyCode }) {
     <section id="offers" className="section-padding" style={{ backgroundColor: '#ffffff' }}>
       <div className="container">
         <div className="section-header">
-          <span className="section-subtitle">Exclusive Privileges</span>
-          <h2 className="section-title">Seasonal Offers & Packages</h2>
+          <span className="section-subtitle">{subtitle}</span>
+          <h2 className="section-title">{title}</h2>
           <p className="section-description">
-            Enhance your luxury itinerary with our limited-edition promotional credits, complimentary nights, and VIP privileges.
+            {description}
           </p>
         </div>
 
@@ -32,7 +37,7 @@ export default function SpecialOffers({ onCopyCode }) {
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '24px'
         }}>
-          {SPECIAL_OFFERS.map((offer) => (
+          {list.map((offer) => (
             <div
               key={offer.id}
               style={{

@@ -63,12 +63,12 @@ export default function Navbar({
   ];
 
   const navbarBg = isScrolled
-    ? 'rgba(255,255,255,0.97)'
-    : 'rgba(255,255,255,0.92)';
+    ? 'linear-gradient(135deg, rgba(59, 7, 100, 0.95) 0%, rgba(88, 28, 135, 0.92) 100%)'
+    : 'linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%)';
 
   const navbarShadow = isScrolled
-    ? '0 4px 32px rgba(15,32,68,0.1)'
-    : '0 2px 12px rgba(15,32,68,0.05)';
+    ? '0 8px 32px rgba(88, 28, 135, 0.25)'
+    : '0 4px 20px rgba(88, 28, 135, 0.15)';
 
   return (
     <>
@@ -83,8 +83,8 @@ export default function Navbar({
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: isScrolled
-          ? '1px solid rgba(15,32,68,0.1)'
-          : '1px solid rgba(15,32,68,0.06)',
+          ? '1px solid rgba(255, 255, 255, 0.15)'
+          : '1px solid rgba(255, 255, 255, 0.1)',
         boxShadow:    navbarShadow,
         transition:   'all 0.3s ease',
       }}>
@@ -147,7 +147,7 @@ export default function Navbar({
                 key={link.name}
                 href={link.href}
                 style={{
-                  color:         'var(--text-body)',
+                  color:         '#ffffff',
                   fontSize:      '0.875rem',
                   fontWeight:    500,
                   padding:       '6px 13px',
@@ -156,11 +156,11 @@ export default function Navbar({
                   whiteSpace:    'nowrap',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.color = 'var(--primary)';
-                  e.currentTarget.style.background = 'var(--primary-pale)';
+                  e.currentTarget.style.color = '#f472b6';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.color = 'var(--text-body)';
+                  e.currentTarget.style.color = '#ffffff';
                   e.currentTarget.style.background = 'transparent';
                 }}
               >

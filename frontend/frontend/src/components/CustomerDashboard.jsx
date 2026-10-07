@@ -3,8 +3,10 @@ import {
   User, Mail, Shield, Calendar, MapPin, CreditCard,
   Heart, Star, Clock, ChevronRight, LogOut, Briefcase,
   Search, Filter, ArrowLeft, X, CheckCircle, XCircle,
-  Award, TrendingUp, Sparkles, Edit3, Eye
+  Award, TrendingUp, Sparkles, Edit3, Eye, MessageCircle
 } from 'lucide-react';
+import CustomerChatWidget from './CustomerChatWidget';
+import InlineChatView from './InlineChatView';
 
 export default function CustomerDashboard({
   currentUser,
@@ -56,6 +58,7 @@ export default function CustomerDashboard({
     { id: 'overview', label: 'Overview', icon: TrendingUp },
     { id: 'bookings', label: 'My Bookings', icon: Briefcase },
     { id: 'wishlist', label: 'Wishlist', icon: Heart },
+    { id: 'chat', label: 'Chat Support', icon: MessageCircle },
     { id: 'profile', label: 'Profile', icon: User }
   ];
 
@@ -466,7 +469,26 @@ export default function CustomerDashboard({
             </div>
           </div>
         )}
+
+        {/* ─── CHAT SUPPORT TAB ─── */}
+        {activeTab === 'chat' && (
+          <div>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', margin: 0, color: 'var(--text-main)' }}>
+                Chat with Hotel Manager
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                Ask questions about your reservation, special requests, or anything else.
+                Your conversation history is always saved.
+              </p>
+            </div>
+            <InlineChatView currentUser={currentUser} />
+          </div>
+        )}
       </div>
+
+      {/* Floating Chat Widget — shown on all tabs EXCEPT the chat tab (to avoid duplication) */}
+      {activeTab !== 'chat' && <CustomerChatWidget currentUser={currentUser} />}
     </div>
   );
 }

@@ -2,9 +2,14 @@ import React, { useState } from 'react';
 import { Sparkles, ArrowRight, CheckCircle, Calendar, Users, X } from 'lucide-react';
 import { EXPERIENCES } from '../data/hotelsData';
 
-export default function Experiences({ onExplore }) {
+export default function Experiences({ onExplore, metaData, experiencesList }) {
   const [selectedExp, setSelectedExp] = useState(null);
   const [reserved, setReserved] = useState(false);
+  const list = experiencesList && experiencesList.length > 0 ? experiencesList : EXPERIENCES;
+
+  const subtitle = metaData?.subtitle || 'Beyond Accommodation';
+  const title = metaData?.title || 'Curated Bespoke Experiences';
+  const description = metaData?.description || 'Immerse yourself in world-class culinary journeys, transformative wellness sanctuaries, and private maritime charters.';
 
   const handleReserve = (e) => {
     e.preventDefault();
@@ -19,10 +24,10 @@ export default function Experiences({ onExplore }) {
     <section id="experiences" className="section-padding" style={{ backgroundColor: 'var(--bg-cream)' }}>
       <div className="container">
         <div className="section-header">
-          <span className="section-subtitle">Beyond Accommodation</span>
-          <h2 className="section-title">Curated Bespoke Experiences</h2>
+          <span className="section-subtitle">{subtitle}</span>
+          <h2 className="section-title">{title}</h2>
           <p className="section-description">
-            Immerse yourself in world-class culinary journeys, transformative wellness sanctuaries, and private maritime charters.
+            {description}
           </p>
         </div>
 
@@ -31,7 +36,7 @@ export default function Experiences({ onExplore }) {
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '28px'
         }}>
-          {EXPERIENCES.map((exp) => (
+          {list.map((exp) => (
             <div
               key={exp.id}
               className="luxury-card"
