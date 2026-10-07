@@ -2,17 +2,22 @@ import React from 'react';
 import { MapPin, ArrowRight } from 'lucide-react';
 import { DESTINATIONS } from '../data/hotelsData';
 
-export default function DestinationsShowcase({ onSelectDestination }) {
-  const featuredDestinations = DESTINATIONS.filter(d => d.id !== 'all');
+export default function DestinationsShowcase({ onSelectDestination, metaData, destinationsList }) {
+  const list = destinationsList && destinationsList.length > 0 ? destinationsList : DESTINATIONS;
+  const featuredDestinations = list.filter(d => d.id !== 'all');
+
+  const subtitle = metaData?.subtitle || 'World-Renowned Destinations';
+  const title = metaData?.title || 'Escape to Extraordinary Places';
+  const description = metaData?.description || 'From secluded private atolls in the Indian Ocean to chic Parisian boulevards, find sanctuary in the world’s most coveted locales.';
 
   return (
     <section id="destinations" className="section-padding" style={{ backgroundColor: '#ffffff' }}>
       <div className="container">
         <div className="section-header">
-          <span className="section-subtitle">World-Renowned Destinations</span>
-          <h2 className="section-title">Escape to Extraordinary Places</h2>
+          <span className="section-subtitle">{subtitle}</span>
+          <h2 className="section-title">{title}</h2>
           <p className="section-description">
-            From secluded private atolls in the Indian Ocean to chic Parisian boulevards, find sanctuary in the world’s most coveted locales.
+            {description}
           </p>
         </div>
 

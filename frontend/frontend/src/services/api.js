@@ -189,5 +189,100 @@ export const api = {
 
   deleteRoom: (roomId) => request(`/admin/rooms/${roomId}`, {
     method: 'DELETE'
+  }),
+
+  // Front Page Content & Image Management
+  getSiteContent: () => request('/content'),
+
+  updateSiteContent: (key, contentObject) => request(`/admin/content/${key}`, {
+    method: 'PUT',
+    body: JSON.stringify({ contentJson: JSON.stringify(contentObject) })
+  }),
+
+  updateDestination: (id, destData) => request(`/admin/destinations/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(destData)
+  }),
+
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = getAuthToken();
+    const res = await fetch(`${API_BASE_URL}/admin/upload-image`, {
+      method: 'POST',
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: formData
+    });
+    if (!res.ok) {
+      throw new Error('Image upload failed');
+    }
+    return res.json();
+  },
+
+  // ─── Chat APIs ───
+  getChatMessages: (conversationId) => request(`/chat/messages/${conversationId}`),
+
+  getAllChatConversations: () => request('/chat/conversations/all'),
+
+  sendChatMessage: (payload) => request('/chat/send', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }),
+
+  markChatRead: (conversationId, role) => request(`/chat/messages/${conversationId}/read?role=${encodeURIComponent(role)}`, {
+    method: 'PUT'
+  }),
+
+  // ─── Room Management APIs ───
+  createRoom: (roomData) => request('/admin/rooms', {
+    method: 'POST',
+    body: JSON.stringify(roomData)
+  }),
+
+  updateRoom: (roomId, roomData) => request(`/admin/rooms/${roomId}`, {
+    method: 'PUT',
+    body: JSON.stringify(roomData)
+  }),
+
+  // ─── Luxury Addons/Services Management ───
+  getLuxuryAddons: () => request('/admin/luxury-addons'),
+
+  createLuxuryAddon: (addonData) => request('/admin/luxury-addons', {
+    method: 'POST',
+    body: JSON.stringify(addonData)
+  }),
+
+  updateLuxuryAddon: (addonId, addonData) => request(`/admin/luxury-addons/${addonId}`, {
+    method: 'PUT',
+    body: JSON.stringify(addonData)
+  }),
+
+  deleteLuxuryAddon: (addonId) => request(`/admin/luxury-addons/${addonId}`, {
+    method: 'DELETE'
+  }),
+
+  // ─── User Profile Management ───
+  updateProfile: (userId, profileData) => request(`/auth/profile/${userId}`, {
+    method: 'PUT',
+    body: JSON.stringify(profileData)
+  }),
+
+  updatePassword: (userId, currentPassword, newPassword) => request(`/auth/password/${userId}`, {
+    method: 'PUT',
+    body: JSON.stringify({ currentPassword, newPassword })
+  }),
+
+  // ─── Booking Management for Customers ───
+  getBookingDetails: (bookingId) => request(`/bookings/${bookingId}`),
+
+  updateBooking: (bookingId, updateData) => request(`/bookings/${bookingId}`, {
+    method: 'PUT',
+    body: JSON.stringify(updateData)
+  }),
+
+  printBookingVoucher: (bookingId) => request(`/bookings/${bookingId}/voucher`, {
+    method: 'GET'
   })
 };

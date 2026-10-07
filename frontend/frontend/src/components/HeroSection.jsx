@@ -1,8 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Award, Clock, Sparkles, ArrowRight } from 'lucide-react';
-import SearchConsole from './SearchConsole';
 
-export default function HeroSection({ searchFilters, setSearchFilters, onPerformSearch }) {
+export default function HeroSection({ heroData }) {
+  // Array of beautiful luxury hotel background images
+  const backgroundImages = [
+    'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=2200&q=90', // Overwater villa
+    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=90', // Luxury bedroom
+    'https://images.unsplash.com/photo-1542314503-4e6fc5b34cbd?auto=format&fit=crop&w=2200&q=90', // Beach resort
+    'https://images.unsplash.com/photo-1519167758993-7c5c5f8aa58e?auto=format&fit=crop&w=2200&q=90', // Modern hotel
+    'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=2200&q=90', // Infinity pool
+  ];
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Auto-rotate images every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % backgroundImages.length);
+        setIsTransitioning(false);
+      }, 500); // Transition duration
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const bgImage = heroData?.bgImage || backgroundImages[currentImageIndex];
+  const badgeText = heroData?.badge || "World's Leading Luxury Hotel Collection";
+  const titleText = heroData?.title || 'Where Elegance Meets Extraordinary Escapes';
+  const subtitleText = heroData?.subtitle || 'Discover overwater villas, alpine chalets, and Parisian landmark suites — curated for those who expect nothing less than perfection.';
+
   return (
     <section style={{
       position:   'relative',
@@ -14,14 +43,16 @@ export default function HeroSection({ searchFilters, setSearchFilters, onPerform
       paddingBottom: '80px',
       overflow:   'hidden',
     }}>
-      {/* Background Image */}
+      {/* Background Image with Fade Transition */}
       <div style={{
         position:   'absolute',
         inset:      0,
-        backgroundImage: `url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=2200&q=90')`,
+        backgroundImage: `url('${backgroundImages[currentImageIndex]}')`,
         backgroundSize:     'cover',
         backgroundPosition: 'center 45%',
         zIndex: 0,
+        opacity: isTransitioning ? 0.7 : 1,
+        transition: 'opacity 0.5s ease-in-out',
       }} />
 
       {/* Gradient Overlays */}
@@ -39,6 +70,44 @@ export default function HeroSection({ searchFilters, setSearchFilters, onPerform
         position: 'absolute', top: 0, left: 0, right: 0, height: '3px', zIndex: 3,
         background: 'var(--gold-gradient)',
       }} />
+
+      {/* Image Indicators Dots */}
+      <div style={{
+        position: 'absolute',
+        bottom: '30px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 10,
+        display: 'flex',
+        gap: '8px',
+        alignItems: 'center',
+      }}>
+        {backgroundImages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              setIsTransitioning(true);
+              setTimeout(() => {
+                setCurrentImageIndex(index);
+                setIsTransitioning(false);
+              }, 300);
+            }}
+            style={{
+              width: currentImageIndex === index ? '28px' : '8px',
+              height: '8px',
+              borderRadius: '4px',
+              background: currentImageIndex === index ? 'var(--gold-bright)' : 'rgba(255,255,255,0.4)',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              opacity: 0.8,
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
+            title={`Image ${index + 1}`}
+          />
+        ))}
+      </div>
 
       {/* Content */}
       <div className="container" style={{ position: 'relative', zIndex: 5, textAlign: 'center' }}>
@@ -63,7 +132,7 @@ export default function HeroSection({ searchFilters, setSearchFilters, onPerform
             textTransform: 'uppercase',
             color:         'var(--gold-bright)',
           }}>
-            World's Leading Luxury Hotel Collection
+            {badgeText}
           </span>
         </div>
 
@@ -78,15 +147,7 @@ export default function HeroSection({ searchFilters, setSearchFilters, onPerform
           letterSpacing: '-0.02em',
           textShadow:    '0 4px 30px rgba(0,0,0,0.3)',
         }}>
-          Where Elegance Meets{' '}
-          <span style={{
-            background:  'var(--gold-gradient)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>
-            Extraordinary Escapes
-          </span>
+          {titleText}
         </h1>
 
         {/* Subtitle */}
@@ -98,15 +159,10 @@ export default function HeroSection({ searchFilters, setSearchFilters, onPerform
           lineHeight: 1.7,
           fontWeight: 400,
         }}>
-          Discover overwater villas, alpine chalets, and Parisian landmark suites — curated for those who expect nothing less than perfection.
+          {subtitleText}
         </p>
 
-        {/* Search Console */}
-        <SearchConsole
-          searchFilters={searchFilters}
-          setSearchFilters={setSearchFilters}
-          onPerformSearch={onPerformSearch}
-        />
+
 
         {/* Trust Badges */}
         <div style={{

@@ -53,6 +53,36 @@ export default function App() {
   // 1. Currency State
   const [currency, setCurrency] = useState(CURRENCIES[0]);
   const [allRooms, setAllRooms] = useState(ROOMS_DATA);
+  const [destinationsList, setDestinationsList] = useState([]);
+  const [siteContent, setSiteContent] = useState({});
+
+  const loadSiteContent = async () => {
+    try {
+      const [contentData, destsData] = await Promise.allSettled([
+        api.getSiteContent(),
+        api.getDestinations()
+      ]);
+
+      if (contentData.status === 'fulfilled' && contentData.value) {
+        const raw = contentData.value;
+        const parsed = {};
+        Object.keys(raw).forEach(k => {
+          try {
+            parsed[k] = JSON.parse(raw[k]);
+          } catch {
+            parsed[k] = raw[k];
+          }
+        });
+        setSiteContent(parsed);
+      }
+
+      if (destsData.status === 'fulfilled' && destsData.value) {
+        setDestinationsList(destsData.value);
+      }
+    } catch (e) {
+      console.warn('Error fetching site content:', e);
+    }
+  };
 
   // 2. Default Dates: Today + 7 days & Today + 11 days (4 nights)
   const defaultDates = useMemo(() => {
@@ -169,6 +199,8 @@ export default function App() {
 
   // Load live data from Backend API
   useEffect(() => {
+    loadSiteContent();
+
     api.getRooms()
       .then(data => {
         if (data && Array.isArray(data) && data.length > 0) {
@@ -387,6 +419,7 @@ export default function App() {
       {isManagerPortal && ['admin', 'manager'].includes(currentUser?.role?.toLowerCase()) && (
         <ManagerDashboard
           currentUser={currentUser}
+          onSiteContentUpdated={loadSiteContent}
           onClose={() => {
             handleLogout();
             window.location.hash = '';
@@ -418,7 +451,7 @@ export default function App() {
 
       {dashboardView ? (
         dashboardView === 'manager' ? (
-          <ManagerDashboard currentUser={currentUser} onClose={() => setDashboardView(null)} />
+          <ManagerDashboard currentUser={currentUser} onSiteContentUpdated={loadSiteContent} onClose={() => setDashboardView(null)} />
         ) : (
           <CustomerDashboard
             currentUser={currentUser}
@@ -446,11 +479,14 @@ export default function App() {
         searchFilters={searchFilters}
         setSearchFilters={setSearchFilters}
         onPerformSearch={handlePerformSearch}
+        heroData={siteContent.hero}
       />
 
       {/* Destinations Showcase */}
       <DestinationsShowcase
         onSelectDestination={handleSelectDestination}
+        metaData={siteContent.destinations_meta}
+        destinationsList={destinationsList}
       />
 
       {/* Curated Rooms & Suites Catalog */}
