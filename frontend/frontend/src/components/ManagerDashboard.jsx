@@ -343,7 +343,7 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
           <div style={{ padding: '10px 20px 14px', borderBottom: '1px solid var(--border)' }}>
             <span style={{
               fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.14em',
-              textTransform: 'uppercase', color: 'var(--text-muted)'
+              textTransform: 'uppercase', color: '#4a4a6a'
             }}>
               Navigation
             </span>
@@ -360,8 +360,8 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: '11px',
                     padding: '11px 14px', borderRadius: '10px', marginBottom: '4px',
-                    fontSize: '0.88rem', fontWeight: isActive ? 700 : 500,
-                    color: isActive ? 'var(--primary-light)' : 'var(--text-body)',
+                    fontSize: '0.88rem', fontWeight: isActive ? 700 : 600,
+                    color: isActive ? 'var(--primary-light)' : '#1a1a2e',
                     background: isActive
                       ? 'linear-gradient(135deg, var(--primary-pale) 0%, #ede9fe 100%)'
                       : 'transparent',
@@ -383,10 +383,10 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: isActive
                       ? 'linear-gradient(135deg, var(--primary) 0%, #a855f7 100%)'
-                      : '#f3f4f6',
+                      : '#dde0f0',
                     transition: 'background 0.18s ease'
                   }}>
-                    <tab.icon size={15} color={isActive ? '#ffffff' : 'var(--text-muted)'} />
+                    <tab.icon size={15} color={isActive ? '#ffffff' : '#3d3d6b'} />
                   </span>
                   {tab.label}
                 </button>
