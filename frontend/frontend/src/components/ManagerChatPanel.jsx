@@ -52,6 +52,15 @@ export default function ManagerChatPanel({ currentUser }) {
     loadConversations();
     let connection = null;
     let mounted = true;
+    let pollInterval = null;
+
+    const joinAllGroups = async (conn, convList) => {
+      for (const conv of convList) {
+        try {
+          await conn.invoke('JoinConversation', conv.conversationId);
+        } catch {}
+      }
+    };
 
     const init = async () => {
       connection = new signalR.HubConnectionBuilder()
@@ -80,7 +89,10 @@ export default function ManagerChatPanel({ currentUser }) {
                 : c
             );
           } else {
-            // New conversation appeared
+            // New conversation appeared — join its group
+            if (connection?.state === signalR.HubConnectionState.Connected) {
+              connection.invoke('JoinConversation', msg.conversationId).catch(() => {});
+            }
             return [{
               conversationId: msg.conversationId,
               customerName: msg.senderName,
@@ -103,18 +115,42 @@ export default function ManagerChatPanel({ currentUser }) {
 
       try {
         await connection.start();
-        if (mounted) setConnected(true);
+        if (mounted) {
+          setConnected(true);
+          // Join all existing conversation groups so manager receives real-time messages
+          const convList = await fetch(`${API_BASE_URL}/chat/conversations/all`)
+            .then(r => r.ok ? r.json() : [])
+            .catch(() => []);
+          await joinAllGroups(connection, convList);
+        }
       } catch (e) {
         console.warn('Manager SignalR connection failed:', e);
       }
 
       connectionRef.current = connection;
+
+      // Poll every 10s as a fallback for new conversations
+      pollInterval = setInterval(async () => {
+        if (!mounted) return;
+        try {
+          const res = await fetch(`${API_BASE_URL}/chat/conversations/all`);
+          if (res.ok) {
+            const data = await res.json();
+            setConversations(data);
+            // Join any new groups
+            if (connection?.state === signalR.HubConnectionState.Connected) {
+              await joinAllGroups(connection, data);
+            }
+          }
+        } catch {}
+      }, 10000);
     };
 
     init();
 
     return () => {
       mounted = false;
+      if (pollInterval) clearInterval(pollInterval);
       if (connectionRef.current) {
         connectionRef.current.stop();
         connectionRef.current = null;

@@ -37,11 +37,11 @@ export default function ManagerAuthPage({ onLoginSuccess, onBackToSite }) {
         setConfirmPassword('');
       } else {
         result = await api.managerLogin(email.trim(), password);
-        // Verify that logged-in user is actually a manager/admin
+        // Verify that logged-in user is actually a staff member/manager (not customer)
         const role = result?.user?.role?.toLowerCase();
-        if (!['admin', 'manager'].includes(role)) {
+        if (!role || role === 'user') {
           api.logout();
-          setErrorMessage('Access denied. This portal is restricted to hotel managers only.');
+          setErrorMessage('Access denied. This portal is restricted to hotel staff and managers only.');
           return;
         }
         onLoginSuccess(result.user);
@@ -133,7 +133,7 @@ export default function ManagerAuthPage({ onLoginSuccess, onBackToSite }) {
       {/* Auth Card */}
       <div style={{
         width: '100%',
-        maxWidth: '460px',
+        maxWidth: '400px',
         background: 'rgba(255,255,255,0.04)',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,0.12)',
@@ -143,7 +143,7 @@ export default function ManagerAuthPage({ onLoginSuccess, onBackToSite }) {
       }}>
         {/* Header */}
         <div style={{
-          padding: '36px 36px 28px 36px',
+          padding: '24px 28px 18px 28px',
           background: 'linear-gradient(135deg, rgba(89,135,125,0.2) 0%, rgba(89,135,125,0.05) 100%)',
           borderBottom: '1px solid rgba(255,255,255,0.1)',
           textAlign: 'center'
@@ -154,24 +154,24 @@ export default function ManagerAuthPage({ onLoginSuccess, onBackToSite }) {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '12px',
-            marginBottom: '20px'
+            marginBottom: '14px'
           }}>
             <div style={{
-              width: '48px',
-              height: '48px',
+              width: '40px',
+              height: '40px',
               background: 'var(--gold-gradient)',
-              borderRadius: '12px',
+              borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 6px 20px rgba(89,135,125,0.4)'
+              boxShadow: '0 4px 16px rgba(89,135,125,0.4)'
             }}>
-              <Hotel size={26} color="#ffffff" />
+              <Hotel size={22} color="#ffffff" />
             </div>
             <div style={{ textAlign: 'left' }}>
               <div style={{
                 fontFamily: 'var(--font-serif)',
-                fontSize: '1.5rem',
+                fontSize: '1.25rem',
                 fontWeight: 700,
                 color: '#ffffff',
                 lineHeight: 1
@@ -209,7 +209,7 @@ export default function ManagerAuthPage({ onLoginSuccess, onBackToSite }) {
 
           <h2 style={{
             margin: '0 0 6px 0',
-            fontSize: '1.55rem',
+            fontSize: '1.25rem',
             color: '#ffffff',
             fontFamily: 'var(--font-serif)',
             fontWeight: 700
@@ -229,7 +229,7 @@ export default function ManagerAuthPage({ onLoginSuccess, onBackToSite }) {
         </div>
 
         {/* Form */}
-        <div style={{ padding: '28px 36px 32px 36px' }}>
+        <div style={{ padding: '20px 28px 24px 28px' }}>
           {/* Error */}
           {errorMessage && (
             <div style={{
@@ -268,7 +268,64 @@ export default function ManagerAuthPage({ onLoginSuccess, onBackToSite }) {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          {/* Quick Role Demo Accounts */}
+          {!isRegister && (
+            <div style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '12px',
+              padding: '12px 14px',
+              marginBottom: '18px'
+            }}>
+              <div style={{
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                color: 'var(--gold)',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <Shield size={12} /> One-Click Role Logins (RBAC Demo):
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px' }}>
+                {[
+                  { role: '👑 Manager', email: 'manager@luxehaven.com', pass: 'Manager123!', desc: 'All 9 Modules' },
+                  { role: '🛎️ Receptionist', email: 'reception@luxehaven.com', pass: 'Staff123!', desc: 'Bookings & Chat' },
+                  { role: '🏨 Room Ops', email: 'rooms@luxehaven.com', pass: 'Staff123!', desc: 'Rooms & Overview' },
+                  { role: '📣 Marketing', email: 'marketing@luxehaven.com', pass: 'Staff123!', desc: 'CMS & Newsletter' },
+                  { role: '💬 Concierge', email: 'support@luxehaven.com', pass: 'Staff123!', desc: 'Chat & Reviews' }
+                ].map(demo => (
+                  <button
+                    key={demo.email}
+                    type="button"
+                    onClick={() => {
+                      setEmail(demo.email);
+                      setPassword(demo.pass);
+                      setErrorMessage('');
+                    }}
+                    style={{
+                      background: email === demo.email ? 'rgba(217,119,6,0.25)' : 'rgba(255,255,255,0.06)',
+                      border: email === demo.email ? '1px solid var(--gold)' : '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: '8px',
+                      padding: '6px 8px',
+                      color: '#ffffff',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ fontSize: '0.76rem', fontWeight: 700 }}>{demo.role}</div>
+                    <div style={{ fontSize: '0.64rem', color: 'rgba(255,255,255,0.5)' }}>{demo.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {/* Name field (register only) */}
             {isRegister && (
               <div>

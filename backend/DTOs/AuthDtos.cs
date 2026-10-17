@@ -41,5 +41,6 @@ namespace hotel_booking_website.DTOs
         public string Email { get; set; } = string.Empty;
         public string MembershipTier { get; set; } = "Prestige VIP";
         public string Role { get; set; } = "User";
+        public List<string> Permissions { get; set; } = new();
     }
 }

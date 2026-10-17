@@ -1,0 +1,33 @@
+# Visual Studio cache directories
+.vs/
+.vscode/
+
+# Build output
+bin/
+obj/
+dist/
+build/
+
+# Dependencies
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+*.user
+*.suo
+*.sln.docstates
+
+# Logs
+*.log

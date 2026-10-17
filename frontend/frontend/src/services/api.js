@@ -284,5 +284,38 @@ export const api = {
 
   printBookingVoucher: (bookingId) => request(`/bookings/${bookingId}/voucher`, {
     method: 'GET'
+  }),
+
+  // ─── Role-Based Access Control & Staff Permissions ───
+  getRoles: () => request('/roles'),
+
+  getAvailableModules: () => request('/roles/modules'),
+
+  getRolePermissions: (roleName) => request(`/roles/permissions/${encodeURIComponent(roleName)}`),
+
+  createRole: (roleData) => request('/roles', {
+    method: 'POST',
+    body: JSON.stringify(roleData)
+  }),
+
+  updateRole: (roleId, updateData) => request(`/roles/${roleId}`, {
+    method: 'PUT',
+    body: JSON.stringify(updateData)
+  }),
+
+  deleteRole: (roleId) => request(`/roles/${roleId}`, {
+    method: 'DELETE'
+  }),
+
+  getStaffMembers: () => request('/roles/staff'),
+
+  updateUserRole: (userId, role) => request(`/roles/users/${userId}/role`, {
+    method: 'PUT',
+    body: JSON.stringify({ role })
+  }),
+
+  createStaffMember: (staffData) => request('/roles/staff', {
+    method: 'POST',
+    body: JSON.stringify(staffData)
   })
 };

@@ -142,7 +142,7 @@ namespace hotel_booking_website.Controllers
                 Email = dto.Email,
                 Phone = dto.Phone,
                 SpecialRequests = dto.SpecialRequests,
-                PaymentMethod = dto.PaymentMethod ?? "card",
+                PaymentMethod = !string.IsNullOrWhiteSpace(dto.PaymentMethod) ? dto.PaymentMethod : "Cash on Arrival",
                 TotalAmountUSD = totalAmountUSD,
                 Currency = dto.Currency ?? "USD",
                 CurrencySymbol = dto.CurrencySymbol ?? "$",

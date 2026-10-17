@@ -6,7 +6,11 @@ import {
   ArrowLeft, 
   Printer, 
   Clock, 
-  Tag 
+  Tag,
+  Banknote,
+  ShieldCheck,
+  Wallet,
+  Receipt
 } from 'lucide-react';
 import { LUXURY_ADDONS } from '../data/hotelsData';
 import { api } from '../services/api';
@@ -18,7 +22,7 @@ export default function BookingModal({
   onClose,
   onCompleteBooking
 }) {
-  const [step, setStep] = useState(1); // 1: Overview, 2: Addons, 3: Guest Info, 4: Payment, 5: Voucher
+  const [step, setStep] = useState(1); // 1: Overview, 2: Addons, 3: Guest Info, 4: Cash Payment, 5: Voucher
   const [selectedAddons, setSelectedAddons] = useState([]);
   const [promoCode, setPromoCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -33,14 +37,10 @@ export default function BookingModal({
     specialRequests: ''
   });
 
-  // Payment form state
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [cardDetails, setCardDetails] = useState({
-    cardNumber: '•••• •••• •••• 4242',
-    cardName: '',
-    expiry: '12/28',
-    cvv: '888'
-  });
+  // Payment form state — strictly Cash on Arrival only (no online cards/gateways)
+  const [paymentMethod, setPaymentMethod] = useState('Cash on Arrival');
+  const [cashPreference, setCashPreference] = useState('exact');
+  const [cashRemarks, setCashRemarks] = useState('');
 
   // Confirmed booking state
   const [confirmedBooking, setConfirmedBooking] = useState(null);
@@ -123,8 +123,13 @@ export default function BookingModal({
       lastName: guestDetails.lastName,
       email: guestDetails.email,
       phone: guestDetails.phone,
-      specialRequests: guestDetails.specialRequests,
-      paymentMethod,
+      specialRequests: [
+        guestDetails.specialRequests,
+        `[Payment: Cash on Arrival]`,
+        cashRemarks ? `[Cash Note: ${cashRemarks}]` : null,
+        cashPreference ? `[Cash Preference: ${cashPreference === 'exact' ? 'Exact Cash' : cashPreference === 'need_change' ? 'Requires Change' : 'Local/Foreign Currency'}]` : null
+      ].filter(Boolean).join(' '),
+      paymentMethod: 'Cash on Arrival',
       currency: currency.code,
       currencySymbol: currency.symbol,
       currencyRate: currency.rate
@@ -160,7 +165,7 @@ export default function BookingModal({
         guests: `${searchDates.adults} Adults, ${searchDates.children} Children`,
         selectedAddons: selectedAddons.map(id => LUXURY_ADDONS.find(a => a.id === id)?.name).filter(Boolean),
         guestDetails: { ...guestDetails },
-        paymentMethod,
+        paymentMethod: 'Cash on Arrival',
         totalAmountUSD,
         currency: currency.code,
         currencySymbol: currency.symbol,
@@ -229,7 +234,7 @@ export default function BookingModal({
               { num: 1, label: 'Room & Dates' },
               { num: 2, label: 'Luxury Add-ons' },
               { num: 3, label: 'Guest Details' },
-              { num: 4, label: 'Payment' }
+              { num: 4, label: 'Cash Payment' }
             ].map(s => (
               <div 
                 key={s.num} 
@@ -514,28 +519,91 @@ export default function BookingModal({
                   }}
                   className="btn-primary"
                 >
-                  Proceed to Payment <ArrowRight size={16} />
+                  Proceed to Cash Payment <ArrowRight size={16} />
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 4: Payment Simulation */}
+          {/* STEP 4: Cash Payment Wall */}
           {step === 4 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
-                <h4 style={{ fontSize: '1.25rem', marginBottom: '6px' }}>Secure Payment & Price Confirmation</h4>
-                <p style={{ fontSize: '0.88rem', margin: 0 }}>
-                  Transactions are encrypted with 256-bit bank-grade TLS security.
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <Banknote size={20} style={{ color: 'var(--gold)' }} />
+                  <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.16em', fontWeight: 800, color: 'var(--gold)' }}>
+                    Payment Wall: Cash on Arrival
+                  </span>
+                </div>
+                <h4 style={{ fontSize: '1.35rem', margin: 0, fontWeight: 700, color: 'var(--text-main)' }}>
+                  Cash Payment at Property Front Desk
+                </h4>
+                <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                  No credit card or online payment required. Your room reservation is immediately guaranteed and locked; settle the bill in cash when checking in.
                 </p>
+              </div>
+
+              {/* Cash Guarantee Notice Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(89,135,125,0.08) 0%, rgba(217,119,6,0.06) 100%)',
+                border: '1.5px solid rgba(89,135,125,0.25)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{
+                    width: '36px', height: '36px', borderRadius: '10px',
+                    background: 'var(--gold-gradient)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#ffffff', flexShrink: 0
+                  }}>
+                    <ShieldCheck size={20} />
+                  </div>
+                  <div>
+                    <h5 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                      100% Cash Settlement Guaranteed
+                    </h5>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      Pay zero online now. Settle directly at the resort reception desk in cash.
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '10px',
+                  paddingTop: '10px',
+                  borderTop: '1px solid rgba(89,135,125,0.15)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-body)' }}>
+                    <Check size={14} style={{ color: '#059669', flexShrink: 0 }} strokeWidth={3} />
+                    <span>No advance charge or card hold</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-body)' }}>
+                    <Check size={14} style={{ color: '#059669', flexShrink: 0 }} strokeWidth={3} />
+                    <span>Official stamped cash receipt provided</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-body)' }}>
+                    <Check size={14} style={{ color: '#059669', flexShrink: 0 }} strokeWidth={3} />
+                    <span>Instant room &amp; suite lock-in</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-body)' }}>
+                    <Check size={14} style={{ color: '#059669', flexShrink: 0 }} strokeWidth={3} />
+                    <span>Pay in {currency.code} or equivalent cash</span>
+                  </div>
+                </div>
               </div>
 
               {/* Promo code bar */}
               <div style={{
-                background: '#f6f9f8',
-                padding: '16px',
+                background: '#f8fafc',
+                padding: '14px 16px',
                 borderRadius: '10px',
-                border: '1px solid #d4e4dd'
+                border: '1px solid #e2e8f0'
               }}>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <Tag size={16} style={{ color: 'var(--gold)' }} />
@@ -550,7 +618,8 @@ export default function BookingModal({
                       borderRadius: '6px',
                       border: '1px solid #cbd5e1',
                       textTransform: 'uppercase',
-                      fontWeight: 600
+                      fontWeight: 600,
+                      fontSize: '0.85rem'
                     }}
                   />
                   <button
@@ -562,7 +631,9 @@ export default function BookingModal({
                       padding: '8px 16px',
                       borderRadius: '6px',
                       fontSize: '0.85rem',
-                      fontWeight: 600
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      border: 'none'
                     }}
                   >
                     Apply
@@ -580,109 +651,120 @@ export default function BookingModal({
                 )}
               </div>
 
-              {/* Bill Breakdown */}
-              <div style={{ background: '#f8fafc', padding: '18px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-                  <span>{room.name} ({diffDays} nights × {currency.symbol}{Math.round(room.pricePerNight * currency.rate)})</span>
-                  <span>{currency.symbol}{Math.round(baseRoomRate * currency.rate).toLocaleString()}</span>
+              {/* Bill Breakdown & Cash Payable Amount */}
+              <div style={{
+                background: '#ffffff',
+                padding: '20px',
+                borderRadius: '12px',
+                border: '2px solid #e2e8f0',
+                boxShadow: 'var(--shadow-xs)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.88rem' }}>
+                  <span style={{ color: 'var(--text-body)' }}>{room.name} ({diffDays} nights × {currency.symbol}{Math.round(room.pricePerNight * currency.rate)})</span>
+                  <span style={{ fontWeight: 600 }}>{currency.symbol}{Math.round(baseRoomRate * currency.rate).toLocaleString()}</span>
                 </div>
                 {addonsTotalUSD > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
-                    <span>Selected Luxury Add-ons ({selectedAddons.length})</span>
-                    <span>+{currency.symbol}{Math.round(addonsTotalUSD * currency.rate).toLocaleString()}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.88rem' }}>
+                    <span style={{ color: 'var(--text-body)' }}>Selected Luxury Add-ons ({selectedAddons.length})</span>
+                    <span style={{ fontWeight: 600 }}>+{currency.symbol}{Math.round(addonsTotalUSD * currency.rate).toLocaleString()}</span>
                   </div>
                 )}
                 {discountPercent > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem', color: '#16a34a', fontWeight: 600 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.88rem', color: '#16a34a', fontWeight: 600 }}>
                     <span>Promotion Discount ({discountPercent}%)</span>
                     <span>-{currency.symbol}{Math.round(discountAmountUSD * currency.rate).toLocaleString()}</span>
                   </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                  <span>Luxury Hospitality Taxes & Service Fees (12%)</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  <span>Hospitality Taxes &amp; Service Charges (12%)</span>
                   <span>+{currency.symbol}{Math.round(taxesUSD * currency.rate).toLocaleString()}</span>
                 </div>
+
+                {/* Total Cash Amount Highlight Box */}
                 <div style={{
+                  background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                  padding: '16px',
+                  borderRadius: '10px',
+                  border: '1.5px solid #cbd5e1',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  paddingTop: '12px',
-                  borderTop: '1px solid #cbd5e1',
-                  fontSize: '1.25rem',
-                  fontWeight: 800,
-                  color: 'var(--primary)'
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '10px'
                 }}>
-                  <span>Total Amount Due</span>
-                  <span style={{ color: 'var(--gold)' }}>{currency.symbol}{convertedTotal.toLocaleString()}</span>
-                </div>
-              </div>
-
-              {/* Payment Methods Tabs */}
-              <div style={{ display: 'flex', gap: '10px' }}>
-                {['card', 'paypal', 'hotel'].map(method => (
-                  <button
-                    key={method}
-                    type="button"
-                    onClick={() => setPaymentMethod(method)}
-                    style={{
-                      flex: 1,
-                      padding: '12px',
-                      borderRadius: '8px',
-                      border: '1px solid',
-                      borderColor: paymentMethod === method ? 'var(--gold)' : '#cbd5e1',
-                      background: paymentMethod === method ? 'var(--gold-light)' : '#ffffff',
-                      color: paymentMethod === method ? '#3d6b5e' : 'var(--text-main)',
-                      fontWeight: 700,
-                      fontSize: '0.85rem'
-                    }}
-                  >
-                    {method === 'card' && 'Credit / Debit Card'}
-                    {method === 'paypal' && 'PayPal Express'}
-                    {method === 'hotel' && 'Pay Upon Arrival'}
-                  </button>
-                ))}
-              </div>
-
-              {paymentMethod === 'card' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Card Number</label>
-                    <input
-                      type="text"
-                      value={cardDetails.cardNumber}
-                      onChange={(e) => setCardDetails(prev => ({ ...prev, cardNumber: e.target.value }))}
-                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-                    />
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div>
-                      <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Expiry Date</label>
-                      <input
-                        type="text"
-                        value={cardDetails.expiry}
-                        onChange={(e) => setCardDetails(prev => ({ ...prev, expiry: e.target.value }))}
-                        style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>CVV</label>
-                      <input
-                        type="text"
-                        value={cardDetails.cvv}
-                        onChange={(e) => setCardDetails(prev => ({ ...prev, cvv: e.target.value }))}
-                        style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-                      />
+                    <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 800, color: 'var(--gold)' }}>
+                      Total Cash Payable at Check-in
+                    </span>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      Settled in full at resort reception desk
                     </div>
                   </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--primary)', lineHeight: 1 }}>
+                      {currency.symbol}{convertedTotal.toLocaleString()}
+                    </div>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                      {currency.code} Cash
+                    </span>
+                  </div>
                 </div>
-              )}
+              </div>
 
-              {paymentMethod === 'hotel' && (
-                <div style={{ padding: '14px', background: '#ecfdf5', borderRadius: '8px', border: '1px solid #a7f3d0', color: '#065f46', fontSize: '0.88rem' }}>
-                  <strong>No upfront payment required!</strong> Your reservation will be guaranteed and you can settle the bill via credit card or cash upon check-in at the resort front desk.
+              {/* Cash Settlement Options / Preferences */}
+              <div style={{
+                background: '#fafafa',
+                padding: '16px',
+                borderRadius: '10px',
+                border: '1px solid #e5e7eb'
+              }}>
+                <label style={{ fontSize: '0.82rem', fontWeight: 700, display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>
+                  Cash Settlement Preference:
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px', marginBottom: '12px' }}>
+                  {[
+                    { id: 'exact', label: '💵 Paying Exact Cash', desc: 'No change needed' },
+                    { id: 'need_change', label: '🪙 Require Change', desc: 'Bringing larger notes' },
+                    { id: 'foreign', label: '🌍 Local/Foreign Cash', desc: `Paying in ${currency.code}` }
+                  ].map(opt => (
+                    <div
+                      key={opt.id}
+                      onClick={() => setCashPreference(opt.id)}
+                      style={{
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border: `1.5px solid ${cashPreference === opt.id ? 'var(--gold)' : '#e2e8f0'}`,
+                        background: cashPreference === opt.id ? 'var(--gold-light)' : '#ffffff',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ fontSize: '0.82rem', fontWeight: 700, color: cashPreference === opt.id ? 'var(--gold-hover)' : 'var(--text-main)' }}>
+                        {opt.label}
+                      </div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{opt.desc}</div>
+                    </div>
+                  ))}
                 </div>
-              )}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+                <input
+                  type="text"
+                  placeholder="Optional note for Front Desk (e.g. Arriving late evening, paying in USD cash)..."
+                  value={cashRemarks}
+                  onChange={(e) => setCashRemarks(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.82rem',
+                    background: '#ffffff'
+                  }}
+                />
+              </div>
+
+              {/* Navigation & Confirm Reservation */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
                 <button
                   type="button"
                   onClick={() => setStep(3)}
@@ -694,9 +776,9 @@ export default function BookingModal({
                   type="button"
                   onClick={handleProcessPayment}
                   className="btn-gold"
-                  style={{ padding: '14px 28px' }}
+                  style={{ padding: '14px 28px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.95rem' }}
                 >
-                  Confirm & Reserve Room <Check size={18} />
+                  <Banknote size={18} /> Confirm Reservation (Cash on Arrival) <Check size={18} />
                 </button>
               </div>
             </div>
@@ -786,6 +868,18 @@ export default function BookingModal({
                       {confirmedBooking.currencySymbol}{confirmedBooking.convertedTotal.toLocaleString()}
                     </p>
                   </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Payment Method:</span>
+                    <p style={{ margin: 0, fontWeight: 700, color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Banknote size={14} /> Cash on Arrival
+                    </p>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Settlement:</span>
+                    <p style={{ margin: 0, fontWeight: 700, color: 'var(--primary)' }}>
+                      Pay at Front Desk
+                    </p>
+                  </div>
                 </div>
 
                 {confirmedBooking.selectedAddons && confirmedBooking.selectedAddons.length > 0 && (
@@ -796,17 +890,20 @@ export default function BookingModal({
                 )}
 
                 <div style={{
-                  background: 'rgba(89, 135, 125, 0.08)',
-                  padding: '10px 14px',
-                  borderRadius: '8px',
-                  fontSize: '0.78rem',
-                  color: '#3d6b5e',
+                  background: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  fontSize: '0.8rem',
+                  color: '#065f46',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px'
+                  gap: '10px'
                 }}>
-                  <Clock size={16} />
-                  <span>Check-in begins at 3:00 PM. Please present a valid government-issued photo ID upon check-in.</span>
+                  <Banknote size={20} style={{ flexShrink: 0 }} />
+                  <span>
+                    <strong>Cash Settlement at Check-in:</strong> Please present this voucher at the resort front desk upon arrival. Settle <strong>{confirmedBooking.currencySymbol}{confirmedBooking.convertedTotal.toLocaleString()} {confirmedBooking.currency}</strong> in cash at the counter to receive your room keys.
+                  </span>
                 </div>
               </div>
 

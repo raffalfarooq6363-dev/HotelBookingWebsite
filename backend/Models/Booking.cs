@@ -63,7 +63,7 @@ namespace hotel_booking_website.Models
         public string? SpecialRequests { get; set; }
 
         [MaxLength(50)]
-        public string PaymentMethod { get; set; } = "card";
+        public string PaymentMethod { get; set; } = "Cash on Arrival";
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalAmountUSD { get; set; }

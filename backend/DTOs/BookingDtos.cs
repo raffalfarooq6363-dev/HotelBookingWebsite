@@ -41,7 +41,7 @@ namespace hotel_booking_website.DTOs
         [MaxLength(1000)]
         public string? SpecialRequests { get; set; }
 
-        public string PaymentMethod { get; set; } = "card";
+        public string PaymentMethod { get; set; } = "Cash on Arrival";
 
         public string Currency { get; set; } = "USD";
 

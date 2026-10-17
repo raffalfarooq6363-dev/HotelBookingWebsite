@@ -10,7 +10,6 @@ import {
   Sparkles,
   LogOut,
   LayoutDashboard,
-  Phone,
   Shield
 } from 'lucide-react';
 import { CURRENCIES } from '../data/hotelsData';
@@ -27,10 +26,10 @@ export default function Navbar({
   currentUser,
   onLogout
 }) {
-  const [isScrolled, setIsScrolled]           = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen]   = useState(false);
-  const [currencyOpen, setCurrencyOpen]       = useState(false);
-  const [userDropOpen, setUserDropOpen]       = useState(false);
+  const [isScrolled, setIsScrolled]         = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currencyOpen, setCurrencyOpen]     = useState(false);
+  const [userDropOpen, setUserDropOpen]     = useState(false);
 
   const currencyRef = useRef(null);
   const userRef     = useRef(null);
@@ -51,118 +50,141 @@ export default function Navbar({
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const isManager = ['admin', 'manager'].includes(currentUser?.role?.toLowerCase());
+  const isManager = currentUser?.role && currentUser.role.toLowerCase() !== 'user';
 
   const navLinks = [
-    { name: 'Rooms & Suites',  href: '#catalog' },
-    { name: 'Destinations',    href: '#destinations' },
-    { name: 'Experiences',     href: '#experiences' },
-    { name: 'Offers',          href: '#offers' },
-    { name: 'Reviews',         href: '#reviews' },
-    { name: 'FAQ',             href: '#faq' },
+    { name: 'Rooms & Suites', href: '#catalog' },
+    { name: 'Destinations',   href: '#destinations' },
+    { name: 'Experiences',    href: '#experiences' },
+    { name: 'Offers',         href: '#offers' },
+    { name: 'Reviews',        href: '#reviews' },
+    { name: 'FAQ',            href: '#faq' },
   ];
 
   const navbarBg = isScrolled
-    ? 'linear-gradient(135deg, rgba(59, 7, 100, 0.95) 0%, rgba(88, 28, 135, 0.92) 100%)'
-    : 'linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%)';
+    ? 'rgba(9, 13, 24, 0.94)'
+    : 'rgba(12, 17, 30, 0.82)';
+
+  const navbarBorder = isScrolled
+    ? '1px solid rgba(212, 175, 55, 0.25)'
+    : '1px solid rgba(255, 255, 255, 0.08)';
 
   const navbarShadow = isScrolled
-    ? '0 8px 32px rgba(88, 28, 135, 0.25)'
-    : '0 4px 20px rgba(88, 28, 135, 0.15)';
+    ? '0 12px 36px rgba(0, 0, 0, 0.5)'
+    : '0 4px 24px rgba(0, 0, 0, 0.3)';
 
   return (
     <>
-      <header style={{
-        position:     'fixed',
-        top:          0,
-        left:         0,
-        right:        0,
-        zIndex:       900,
-        height:       'var(--nav-height)',
-        background:   navbarBg,
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: isScrolled
-          ? '1px solid rgba(255, 255, 255, 0.15)'
-          : '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow:    navbarShadow,
-        transition:   'all 0.3s ease',
-      }}>
-        <div className="container" style={{
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-        }}>
+      <header
+        className="luxury-navbar"
+        style={{
+          background: navbarBg,
+          borderBottom: navbarBorder,
+          boxShadow: navbarShadow,
+        }}
+      >
+        {/* Top Gold Hairline */}
+        <div className="luxury-navbar-topline" />
 
+        <div
+          className="container"
+          style={{
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '16px',
+          }}
+        >
           {/* ── Brand Logo ── */}
-          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              background: 'var(--gold-gradient)',
-              borderRadius: '10px',
+          <a
+            href="/"
+            style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 14px var(--gold-glow)',
-            }}>
-              <Hotel size={22} color="#fff" />
+              gap: '12px',
+              flexShrink: 0,
+              textDecoration: 'none',
+            }}
+          >
+            {/* Crest Emblem */}
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                background: 'linear-gradient(135deg, #e5c158 0%, #d4af37 50%, #b89037 100%)',
+                borderRadius: '11px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 18px rgba(212, 175, 55, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.5)',
+                border: '1px solid rgba(255, 240, 190, 0.5)',
+                flexShrink: 0,
+                transition: 'transform 0.25s ease',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+            >
+              <Hotel size={22} color="#0c0f17" strokeWidth={2.4} />
             </div>
+
             <div>
-              <div style={{
-                fontFamily:    'var(--font-serif)',
-                fontSize:      '1.5rem',
-                fontWeight:    700,
-                color:         'var(--primary)',
-                letterSpacing: '0.01em',
-                lineHeight:    1,
-              }}>
-                Luxe<span style={{ color: 'var(--gold)' }}>Haven</span>
+              <div
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '1.5rem',
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  letterSpacing: '0.02em',
+                  lineHeight: 1.1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1px',
+                }}
+              >
+                <span>Luxe</span>
+                <span
+                  style={{
+                    background: 'linear-gradient(135deg, #fce08c 0%, #d4af37 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    color: '#d4af37',
+                  }}
+                >
+                  Haven
+                </span>
               </div>
-              <div style={{
-                fontSize:      '0.58rem',
-                letterSpacing: '0.24em',
-                textTransform: 'uppercase',
-                color:         'var(--text-muted)',
-                marginTop:     '3px',
-                fontWeight:    600,
-              }}>
+              <div
+                style={{
+                  fontSize: '0.58rem',
+                  letterSpacing: '0.28em',
+                  textTransform: 'uppercase',
+                  color: 'rgba(225, 220, 205, 0.82)',
+                  marginTop: '2px',
+                  fontWeight: 600,
+                }}
+              >
                 Hotels &amp; Resorts
               </div>
             </div>
           </a>
 
-          {/* ── Desktop Nav Links ── */}
-          <nav className="desktop-nav" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '2px',
-            flex: 1,
-            justifyContent: 'center',
-          }}>
-            {navLinks.map(link => (
+          {/* ── Desktop Navigation Links ── */}
+          <nav
+            className="nav-desktop-links"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              flex: 1,
+              justifyContent: 'center',
+            }}
+          >
+            {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                style={{
-                  color:         '#ffffff',
-                  fontSize:      '0.875rem',
-                  fontWeight:    500,
-                  padding:       '6px 13px',
-                  borderRadius:  'var(--radius-sm)',
-                  transition:    'all 0.2s ease',
-                  whiteSpace:    'nowrap',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.color = '#f472b6';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.color = '#ffffff';
-                  e.currentTarget.style.background = 'transparent';
-                }}
+                className="nav-link-item"
               >
                 {link.name}
               </a>
@@ -170,167 +192,171 @@ export default function Navbar({
           </nav>
 
           {/* ── Right Actions ── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-
+          <div style={{ display: 'flex', alignItems: 'center', gap: '9px', flexShrink: 0 }}>
             {/* Currency Selector */}
             <div ref={currencyRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => setCurrencyOpen(!currencyOpen)}
+                className="nav-glass-btn"
                 style={{
-                  display:     'flex',
-                  alignItems:  'center',
-                  gap:         '5px',
-                  background:  '#fff',
-                  border:      '1px solid var(--border)',
-                  borderRadius:'var(--radius-sm)',
-                  padding:     '7px 11px',
-                  fontSize:    '0.82rem',
-                  fontWeight:  600,
-                  color:       'var(--text-main)',
-                  boxShadow:   'var(--shadow-xs)',
-                  transition:  'all 0.2s ease',
+                  height: '38px',
+                  padding: '0 12px',
+                  border: currencyOpen
+                    ? '1px solid rgba(212, 175, 55, 0.6)'
+                    : '1px solid rgba(255, 255, 255, 0.16)',
                 }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--gold)'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                aria-label="Select Currency"
               >
-                <span style={{ color: 'var(--gold)', fontWeight: 700 }}>{currency.symbol}</span>
-                <span>{currency.code}</span>
-                <ChevronDown size={13} style={{ color: 'var(--text-muted)', transform: currencyOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+                <span style={{ color: '#e5c158', fontWeight: 800 }}>{currency.symbol}</span>
+                <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>{currency.code}</span>
+                <ChevronDown
+                  size={13}
+                  style={{
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    transform: currencyOpen ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 0.2s ease',
+                  }}
+                />
               </button>
 
               {currencyOpen && (
-                <div style={{
-                  position:    'absolute',
-                  top:         'calc(100% + 8px)',
-                  right:       0,
-                  background:  '#fff',
-                  border:      '1px solid var(--border)',
-                  borderRadius:'var(--radius-md)',
-                  padding:     '6px',
-                  minWidth:    '150px',
-                  boxShadow:   'var(--shadow-lg)',
-                  zIndex:      960,
-                  animation:   'fadeIn 0.15s ease',
-                }}>
-                  {CURRENCIES.map(curr => (
-                    <button
-                      key={curr.code}
-                      onClick={() => { setCurrency(curr); setCurrencyOpen(false); }}
-                      style={{
-                        width:        '100%',
-                        display:      'flex',
-                        alignItems:   'center',
-                        justifyContent: 'space-between',
-                        padding:      '9px 12px',
-                        borderRadius: 'var(--radius-sm)',
-                        fontSize:     '0.85rem',
-                        fontWeight:   currency.code === curr.code ? 700 : 500,
-                        color:        currency.code === curr.code ? 'var(--gold)' : 'var(--text-main)',
-                        background:   currency.code === curr.code ? 'var(--gold-light)' : 'transparent',
-                        transition:   'all 0.15s ease',
-                      }}
-                      onMouseEnter={e => { if (currency.code !== curr.code) e.currentTarget.style.background = 'var(--bg-alt)'; }}
-                      onMouseLeave={e => { if (currency.code !== curr.code) e.currentTarget.style.background = 'transparent'; }}
-                    >
-                      <span>{curr.code}</span>
-                      <span style={{ color: 'var(--gold)', fontWeight: 700 }}>{curr.symbol}</span>
-                    </button>
-                  ))}
+                <div
+                  className="nav-dropdown-menu"
+                  style={{ minWidth: '155px' }}
+                >
+                  <div
+                    style={{
+                      fontSize: '0.68rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      padding: '4px 10px 8px',
+                      fontWeight: 700,
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    Select Currency
+                  </div>
+                  {CURRENCIES.map((curr) => {
+                    const isSelected = currency.code === curr.code;
+                    return (
+                      <button
+                        key={curr.code}
+                        onClick={() => {
+                          setCurrency(curr);
+                          setCurrencyOpen(false);
+                        }}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '8px 12px',
+                          borderRadius: '6px',
+                          fontSize: '0.84rem',
+                          fontWeight: isSelected ? 700 : 500,
+                          color: isSelected ? '#f7df94' : 'rgba(255, 255, 255, 0.9)',
+                          background: isSelected ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
+                          border: isSelected
+                            ? '1px solid rgba(212, 175, 55, 0.35)'
+                            : '1px solid transparent',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          marginBottom: '2px',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+                            e.currentTarget.style.color = '#f7df94';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)';
+                          }
+                        }}
+                      >
+                        <span>{curr.code}</span>
+                        <span style={{ color: '#e5c158', fontWeight: 800 }}>{curr.symbol}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
-            {/* Wishlist */}
+            {/* Wishlist Button */}
             <button
               onClick={onOpenWishlist}
-              title="Saved Favourites"
+              className="nav-glass-btn"
+              title="Saved Suites & Villas"
               style={{
-                position:    'relative',
-                width:       '38px',
-                height:      '38px',
-                display:     'flex',
-                alignItems:  'center',
-                justifyContent: 'center',
-                borderRadius:'var(--radius-sm)',
-                background:  '#fff',
-                border:      '1px solid var(--border)',
-                color:       'var(--text-main)',
-                boxShadow:   'var(--shadow-xs)',
-                transition:  'all 0.2s ease',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#ef4444';
-                e.currentTarget.style.background = '#fff5f5';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'var(--border)';
-                e.currentTarget.style.background = '#fff';
+                position: 'relative',
+                width: '38px',
+                height: '38px',
+                padding: 0,
               }}
             >
               <Heart
-                size={17}
+                size={16}
                 style={{
-                  color: wishlistCount > 0 ? '#ef4444' : 'var(--text-muted)',
-                  fill:  wishlistCount > 0 ? '#ef4444' : 'none',
-                  transition: '0.2s'
+                  color: wishlistCount > 0 ? '#f43f5e' : 'rgba(255, 255, 255, 0.85)',
+                  fill: wishlistCount > 0 ? '#f43f5e' : 'none',
+                  transition: 'all 0.2s ease',
                 }}
               />
               {wishlistCount > 0 && (
-                <span style={{
-                  position: 'absolute', top: '-5px', right: '-5px',
-                  background: '#ef4444', color: '#fff',
-                  fontSize: '0.65rem', fontWeight: 800,
-                  width: '17px', height: '17px',
-                  borderRadius: '50%', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 2px 6px rgba(239,68,68,0.5)',
-                }}>
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    background: 'linear-gradient(135deg, #f43f5e, #e11d48)',
+                    color: '#ffffff',
+                    fontSize: '0.64rem',
+                    fontWeight: 800,
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(244, 63, 94, 0.6)',
+                    border: '1.5px solid rgba(13, 17, 28, 0.9)',
+                  }}
+                >
                   {wishlistCount}
                 </span>
               )}
             </button>
 
-            {/* My Bookings */}
+            {/* My Bookings Button */}
             <button
               onClick={onOpenBookings}
-              className="hide-sm"
+              className="nav-glass-btn hide-sm"
               title="My Reservations"
               style={{
-                display:    'flex',
-                alignItems: 'center',
-                gap:        '7px',
-                background: 'var(--primary-pale)',
-                border:     '1px solid rgba(15,32,68,0.12)',
-                color:      'var(--primary)',
-                padding:    '8px 15px',
-                borderRadius: 'var(--radius-sm)',
-                fontSize:   '0.85rem',
-                fontWeight: 600,
-                transition: 'all 0.2s ease',
-                boxShadow:  'var(--shadow-xs)',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'var(--primary)';
-                e.currentTarget.style.color = '#fff';
-                e.currentTarget.style.borderColor = 'var(--primary)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'var(--primary-pale)';
-                e.currentTarget.style.color = 'var(--primary)';
-                e.currentTarget.style.borderColor = 'rgba(15,32,68,0.12)';
+                height: '38px',
+                padding: '0 14px',
               }}
             >
-              <Briefcase size={15} />
-              Bookings
+              <Briefcase size={15} style={{ color: '#e5c158' }} />
+              <span>Bookings</span>
               {bookingsCount > 0 && (
-                <span style={{
-                  background: 'var(--gold)',
-                  color: '#fff',
-                  fontSize: '0.68rem',
-                  fontWeight: 800,
-                  padding: '1px 6px',
-                  borderRadius: 'var(--radius-full)',
-                }}>
+                <span
+                  style={{
+                    background: 'linear-gradient(135deg, #e5c158, #b89037)',
+                    color: '#0b0e14',
+                    fontSize: '0.68rem',
+                    fontWeight: 800,
+                    padding: '1px 6px',
+                    borderRadius: '9999px',
+                    marginLeft: '2px',
+                    boxShadow: '0 2px 6px rgba(212, 175, 55, 0.3)',
+                  }}
+                >
                   {bookingsCount}
                 </span>
               )}
@@ -341,110 +367,184 @@ export default function Navbar({
               <div ref={userRef} style={{ position: 'relative' }}>
                 <button
                   onClick={() => setUserDropOpen(!userDropOpen)}
+                  className="nav-glass-btn"
                   style={{
-                    display:    'flex',
-                    alignItems: 'center',
-                    gap:        '8px',
-                    background: 'var(--gold-gradient)',
-                    color:      '#fff',
-                    padding:    '7px 14px',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize:   '0.85rem',
-                    fontWeight: 600,
-                    boxShadow:  '0 4px 16px var(--gold-glow)',
-                    transition: 'all 0.2s ease',
+                    height: '38px',
+                    padding: '0 12px 0 6px',
+                    border: userDropOpen
+                      ? '1px solid rgba(212, 175, 55, 0.6)'
+                      : '1px solid rgba(212, 175, 55, 0.3)',
+                    background: userDropOpen
+                      ? 'rgba(212, 175, 55, 0.14)'
+                      : 'rgba(255, 255, 255, 0.08)',
                   }}
-                  onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.08)'}
-                  onMouseLeave={e => e.currentTarget.style.filter = 'none'}
                 >
-                  <div style={{
-                    width: '26px', height: '26px', borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.25)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.8rem', fontWeight: 800,
-                    border: '1.5px solid rgba(255,255,255,0.5)',
-                  }}>
-                    {currentUser.name.charAt(0).toUpperCase()}
+                  {/* User Initial Avatar */}
+                  <div
+                    style={{
+                      width: '26px',
+                      height: '26px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #e5c158 0%, #b89037 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      color: '#0b0e14',
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+                      border: '1.5px solid rgba(255, 255, 255, 0.6)',
+                    }}
+                  >
+                    {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                   </div>
-                  <span className="hide-sm">{currentUser.name.split(' ')[0]}</span>
-                  <ChevronDown size={13} style={{ transform: userDropOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+
+                  <span className="hide-sm" style={{ fontSize: '0.84rem', fontWeight: 600 }}>
+                    {currentUser.name ? currentUser.name.split(' ')[0] : 'Account'}
+                  </span>
+
+                  <ChevronDown
+                    size={13}
+                    style={{
+                      color: 'rgba(255, 255, 255, 0.6)',
+                      transform: userDropOpen ? 'rotate(180deg)' : 'none',
+                      transition: 'transform 0.2s ease',
+                    }}
+                  />
                 </button>
 
                 {userDropOpen && (
-                  <div style={{
-                    position: 'absolute', top: 'calc(100% + 10px)', right: 0,
-                    background: '#fff',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '8px',
-                    minWidth: '210px',
-                    boxShadow: 'var(--shadow-lg)',
-                    zIndex: 960,
-                    animation: 'fadeIn 0.15s ease',
-                  }}>
-                    {/* User info */}
-                    <div style={{
-                      padding: '10px 12px 12px',
-                      borderBottom: '1px solid var(--border)',
-                      marginBottom: '6px',
-                    }}>
+                  <div
+                    className="nav-dropdown-menu"
+                    style={{ minWidth: '220px' }}
+                  >
+                    {/* User info Card */}
+                    <div
+                      style={{
+                        padding: '10px 12px 12px',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                        marginBottom: '6px',
+                      }}
+                    >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{
-                          width: '36px', height: '36px', borderRadius: '50%',
-                          background: 'var(--gold-gradient)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: '#fff', fontSize: '0.95rem', fontWeight: 700,
-                          flexShrink: 0,
-                        }}>
-                          {currentUser.name.charAt(0).toUpperCase()}
+                        <div
+                          style={{
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #e5c158 0%, #b89037 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#0b0e14',
+                            fontSize: '0.95rem',
+                            fontWeight: 800,
+                            flexShrink: 0,
+                            border: '1.5px solid rgba(255, 240, 190, 0.7)',
+                          }}
+                        >
+                          {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                         </div>
-                        <div>
-                          <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                        <div style={{ overflow: 'hidden' }}>
+                          <div
+                            style={{
+                              fontWeight: 700,
+                              fontSize: '0.9rem',
+                              color: '#ffffff',
+                              whiteSpace: 'nowrap',
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                            }}
+                          >
                             {currentUser.name}
                           </div>
-                          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '1px' }}>
+                          <div
+                            style={{
+                              fontSize: '0.74rem',
+                              color: 'rgba(255, 255, 255, 0.6)',
+                              marginTop: '1px',
+                              whiteSpace: 'nowrap',
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                            }}
+                          >
                             {currentUser.email}
                           </div>
                         </div>
                       </div>
-                      <div style={{
-                        marginTop: '8px',
-                        display: 'inline-block',
-                        background: 'var(--gold-light)',
-                        color: 'var(--gold-hover)',
-                        border: '1px solid var(--gold-border)',
-                        fontSize: '0.68rem',
-                        fontWeight: 700,
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                        padding: '2px 10px',
-                        borderRadius: 'var(--radius-full)',
-                      }}>
-                        {isManager ? '⭐ Manager' : currentUser.membershipTier || 'Member'}
+
+                      {/* Tier / Role Tag */}
+                      <div
+                        style={{
+                          marginTop: '8px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          background: isManager
+                            ? 'rgba(212, 175, 55, 0.2)'
+                            : 'rgba(59, 130, 246, 0.18)',
+                          color: isManager ? '#f7df94' : '#93c5fd',
+                          border: isManager
+                            ? '1px solid rgba(212, 175, 55, 0.4)'
+                            : '1px solid rgba(59, 130, 246, 0.35)',
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          padding: '2px 8px',
+                          borderRadius: '9999px',
+                        }}
+                      >
+                        {isManager ? (
+                          <>
+                            <Shield size={11} style={{ color: '#e5c158' }} />
+                            <span>{currentUser.role} Portal</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles size={11} />
+                            <span>{currentUser.membershipTier || 'Member'}</span>
+                          </>
+                        )}
                       </div>
                     </div>
 
                     {/* Dashboard */}
                     <DropItem
                       icon={<LayoutDashboard size={15} />}
-                      label={isManager ? 'Manager Dashboard' : 'My Dashboard'}
-                      onClick={() => { onOpenDashboard(); setUserDropOpen(false); }}
+                      label={isManager ? `${currentUser?.role || 'Staff'} Dashboard` : 'My Dashboard'}
+                      onClick={() => {
+                        onOpenDashboard();
+                        setUserDropOpen(false);
+                      }}
                     />
 
                     {/* My Reservations */}
                     <DropItem
                       icon={<Briefcase size={15} />}
                       label="My Reservations"
-                      onClick={() => { onOpenBookings(); setUserDropOpen(false); }}
+                      onClick={() => {
+                        onOpenBookings();
+                        setUserDropOpen(false);
+                      }}
                     />
 
                     {/* Sign Out */}
-                    <div style={{ borderTop: '1px solid var(--border)', marginTop: '6px', paddingTop: '6px' }}>
+                    <div
+                      style={{
+                        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                        marginTop: '6px',
+                        paddingTop: '6px',
+                      }}
+                    >
                       <DropItem
                         icon={<LogOut size={15} />}
                         label="Sign Out"
                         danger
-                        onClick={() => { onLogout(); setUserDropOpen(false); }}
+                        onClick={() => {
+                          onLogout();
+                          setUserDropOpen(false);
+                        }}
                       />
                     </div>
                   </div>
@@ -453,119 +553,156 @@ export default function Navbar({
             ) : (
               <button
                 onClick={onOpenAuth}
-                style={{
-                  display:    'flex',
-                  alignItems: 'center',
-                  gap:        '7px',
-                  background: 'var(--primary)',
-                  color:      '#fff',
-                  padding:    '8px 18px',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize:   '0.88rem',
-                  fontWeight: 600,
-                  boxShadow:  '0 4px 16px rgba(15,32,68,0.28)',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'var(--gold)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px var(--gold-glow)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'var(--primary)';
-                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(15,32,68,0.28)';
-                }}
+                className="nav-gold-cta"
+                title="Sign in to your LuxeHaven account"
               >
-                <User size={15} />
-                Sign In
+                <User size={15} color="#0b0e14" strokeWidth={2.5} />
+                <span>Sign In</span>
               </button>
             )}
 
-            {/* Mobile Hamburger */}
+            {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="mobile-menu-btn"
+              className="nav-glass-btn nav-mobile-toggle"
+              aria-label="Open Mobile Menu"
               style={{
-                display:      'none',
-                alignItems:   'center',
-                justifyContent: 'center',
-                width:        '38px',
-                height:       '38px',
-                borderRadius: 'var(--radius-sm)',
-                background:   '#fff',
-                border:       '1px solid var(--border)',
-                color:        'var(--text-main)',
-                boxShadow:    'var(--shadow-xs)',
+                width: '38px',
+                height: '38px',
+                padding: 0,
               }}
             >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {mobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* ── Mobile Menu ── */}
+      {/* ── Mobile Navigation Drawer ── */}
       {mobileMenuOpen && (
-        <div style={{
-          position:   'fixed',
-          top:        'var(--nav-height)',
-          left:       0,
-          right:      0,
-          background: '#fff',
-          borderBottom: '1px solid var(--border)',
-          padding:    '20px 24px',
-          display:    'flex',
-          flexDirection: 'column',
-          gap:        '4px',
-          boxShadow:  'var(--shadow-lg)',
-          zIndex:     850,
-          animation:  'fadeIn 0.2s ease',
-        }}>
-          {navLinks.map(link => (
+        <div
+          style={{
+            position: 'fixed',
+            top: 'var(--nav-height, 74px)',
+            left: 0,
+            right: 0,
+            background: 'rgba(10, 14, 24, 0.98)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+            padding: '20px 24px 28px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            boxShadow: '0 24px 50px rgba(0, 0, 0, 0.8)',
+            zIndex: 890,
+            animation: 'navFadeIn 0.2s ease',
+          }}
+        >
+          {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
               style={{
-                color:       'var(--text-main)',
-                fontSize:    '1rem',
-                fontWeight:  600,
-                padding:     '11px 14px',
-                borderRadius:'var(--radius-sm)',
-                borderBottom:'1px solid var(--bg-alt)',
-                transition:  'all 0.15s ease',
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontSize: '1rem',
+                fontWeight: 600,
+                padding: '12px 14px',
+                borderRadius: '8px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                transition: 'all 0.15s ease',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
-              onMouseEnter={e => e.currentTarget.style.background = 'var(--primary-pale)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(212, 175, 55, 0.12)';
+                e.currentTarget.style.color = '#f7df94';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)';
+              }}
             >
-              {link.name}
+              <span>{link.name}</span>
+              <span style={{ color: 'rgba(212, 175, 55, 0.5)', fontSize: '0.9rem' }}>→</span>
             </a>
           ))}
-          {/* Mobile bookings */}
-          <button
-            onClick={() => { onOpenBookings(); setMobileMenuOpen(false); }}
+
+          {/* Quick Actions in Mobile Drawer */}
+          <div
             style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '11px 14px', borderRadius: 'var(--radius-sm)',
-              fontSize: '1rem', fontWeight: 600, color: 'var(--primary)',
-              marginTop: '6px', background: 'var(--primary-pale)',
-              border: '1px solid rgba(15,32,68,0.1)',
+              display: 'flex',
+              gap: '10px',
+              marginTop: '12px',
+              paddingTop: '12px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
             }}
           >
-            <Briefcase size={16} />
-            My Bookings {bookingsCount > 0 && `(${bookingsCount})`}
-          </button>
-          {/* Mobile staff link */}
+            {/* My Bookings in Mobile */}
+            <button
+              onClick={() => {
+                onOpenBookings();
+                setMobileMenuOpen(false);
+              }}
+              className="nav-glass-btn"
+              style={{
+                flex: 1,
+                height: '42px',
+                fontSize: '0.88rem',
+              }}
+            >
+              <Briefcase size={16} style={{ color: '#e5c158' }} />
+              <span>Bookings ({bookingsCount})</span>
+            </button>
+
+            {/* Wishlist in Mobile */}
+            <button
+              onClick={() => {
+                onOpenWishlist();
+                setMobileMenuOpen(false);
+              }}
+              className="nav-glass-btn"
+              style={{
+                flex: 1,
+                height: '42px',
+                fontSize: '0.88rem',
+              }}
+            >
+              <Heart
+                size={16}
+                style={{
+                  color: wishlistCount > 0 ? '#f43f5e' : '#fff',
+                  fill: wishlistCount > 0 ? '#f43f5e' : 'none',
+                }}
+              />
+              <span>Wishlist ({wishlistCount})</span>
+            </button>
+          </div>
+
+          {/* Staff / Manager Portal Link in Mobile */}
           <a
             href="/manager"
             style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              padding: '10px 14px', borderRadius: 'var(--radius-sm)',
-              fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)',
-              marginTop: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '11px 14px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              color: '#e5c158',
+              background: 'rgba(212, 175, 55, 0.08)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+              textDecoration: 'none',
+              marginTop: '6px',
             }}
           >
-            <Shield size={14} />
-            Staff / Manager Login
+            <Shield size={15} />
+            <span>Staff &amp; Manager Portal</span>
           </a>
         </div>
       )}
@@ -579,22 +716,33 @@ function DropItem({ icon, label, onClick, danger }) {
     <button
       onClick={onClick}
       style={{
-        width:       '100%',
-        display:     'flex',
-        alignItems:  'center',
-        gap:         '9px',
-        padding:     '9px 12px',
-        borderRadius:'var(--radius-sm)',
-        fontSize:    '0.87rem',
-        fontWeight:  500,
-        color:       danger ? '#ef4444' : 'var(--text-main)',
-        textAlign:   'left',
-        transition:  'all 0.15s ease',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '9px',
+        padding: '9px 12px',
+        borderRadius: '6px',
+        fontSize: '0.86rem',
+        fontWeight: 500,
+        color: danger ? '#f87171' : 'rgba(255, 255, 255, 0.9)',
+        background: 'transparent',
+        border: 'none',
+        textAlign: 'left',
+        cursor: 'pointer',
+        transition: 'all 0.15s ease',
       }}
-      onMouseEnter={e => e.currentTarget.style.background = danger ? '#fff5f5' : 'var(--bg-alt)'}
-      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = danger
+          ? 'rgba(239, 68, 68, 0.15)'
+          : 'rgba(212, 175, 55, 0.12)';
+        if (!danger) e.currentTarget.style.color = '#f7df94';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.color = danger ? '#f87171' : 'rgba(255, 255, 255, 0.9)';
+      }}
     >
-      <span style={{ color: danger ? '#ef4444' : 'var(--gold)', flexShrink: 0 }}>{icon}</span>
+      <span style={{ color: danger ? '#f87171' : '#e5c158', flexShrink: 0 }}>{icon}</span>
       {label}
     </button>
   );

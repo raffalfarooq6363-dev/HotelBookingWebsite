@@ -21,6 +21,9 @@ namespace hotel_booking_website.Data
         public DbSet<LuxuryAddon> LuxuryAddons => Set<LuxuryAddon>();
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<NewsletterSubscriber> NewsletterSubscribers => Set<NewsletterSubscriber>();
+        public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+        public DbSet<SiteContent> SiteContents => Set<SiteContent>();
+        public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,6 +47,15 @@ namespace hotel_booking_website.Data
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(u => u.Email).IsUnique();
+            });
+
+            // RolePermission JSON and index
+            modelBuilder.Entity<RolePermission>(entity =>
+            {
+                entity.HasIndex(r => r.RoleName).IsUnique();
+                entity.Property(r => r.AllowedModules)
+                    .HasConversion(listConverter)
+                    .Metadata.SetValueComparer(listComparer);
             });
 
             // Room JSON columns

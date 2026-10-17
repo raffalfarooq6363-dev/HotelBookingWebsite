@@ -147,6 +147,11 @@ export default function MyBookingsDrawer({
                     <div>
                       <strong>Total:</strong> <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{booking.currencySymbol || '$'}{booking.convertedTotal?.toLocaleString() || booking.totalAmountUSD?.toLocaleString()}</span>
                     </div>
+                    <div style={{ marginTop: '2px' }}>
+                      <span style={{ fontSize: '0.74rem', background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '2px 8px', borderRadius: '4px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        💵 {booking.paymentMethod || 'Cash on Arrival (Pay at Desk)'}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Actions */}
