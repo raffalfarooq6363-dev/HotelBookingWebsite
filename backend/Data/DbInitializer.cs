@@ -616,7 +616,7 @@ namespace hotel_booking_website.Data
                         LastName = "Vance",
                         Email = "alexander.vance@luxury.com",
                         Phone = "+1 555-0199",
-                        PaymentMethod = "card",
+                        PaymentMethod = "Cash on Arrival",
                         TotalAmountUSD = 3980m,
                         Currency = "USD",
                         CurrencySymbol = "$",
@@ -627,6 +627,107 @@ namespace hotel_booking_website.Data
                     await context.Bookings.AddAsync(sampleBooking);
                     await context.SaveChangesAsync();
                 }
+
+                // 8. Seed Default System & Staff Roles
+                if (!await context.RolePermissions.AnyAsync())
+                {
+                    logger.LogInformation("Seeding Default Roles & Module Permissions...");
+                    var defaultRoles = new List<RolePermission>
+                    {
+                        new()
+                        {
+                            Id = "role-manager",
+                            RoleName = "Manager",
+                            Description = "Full executive control over all modules, staff, settings, and permission controls.",
+                            IsSystem = true,
+                            AllowedModules = new List<string>
+                            {
+                                "overview", "frontpage", "bookings", "rooms", "users", "reviews", "newsletter", "chat", "roles"
+                            },
+                            UpdatedAt = DateTime.UtcNow
+                        },
+                        new()
+                        {
+                            Id = "role-receptionist",
+                            RoleName = "Receptionist",
+                            Description = "Front desk operations: guest check-ins, reservations management, and live concierge chat.",
+                            IsSystem = false,
+                            AllowedModules = new List<string>
+                            {
+                                "overview", "bookings", "chat"
+                            },
+                            UpdatedAt = DateTime.UtcNow
+                        },
+                        new()
+                        {
+                            Id = "role-room-specialist",
+                            RoleName = "Room Specialist",
+                            Description = "Room inventory oversight: manage room details, amenities, pricing, and room status.",
+                            IsSystem = false,
+                            AllowedModules = new List<string>
+                            {
+                                "overview", "rooms"
+                            },
+                            UpdatedAt = DateTime.UtcNow
+                        },
+                        new()
+                        {
+                            Id = "role-customer-support",
+                            RoleName = "Customer Support",
+                            Description = "Guest assistance: real-time concierge chat, review moderation, and bookings inquiries.",
+                            IsSystem = false,
+                            AllowedModules = new List<string>
+                            {
+                                "overview", "chat", "reviews", "bookings"
+                            },
+                            UpdatedAt = DateTime.UtcNow
+                        },
+                        new()
+                        {
+                            Id = "role-marketing",
+                            RoleName = "Marketing",
+                            Description = "Promotions and media: front page curation, newsletter subscriber lists, and customer reviews.",
+                            IsSystem = false,
+                            AllowedModules = new List<string>
+                            {
+                                "frontpage", "newsletter", "reviews"
+                            },
+                            UpdatedAt = DateTime.UtcNow
+                        }
+                    };
+                    await context.RolePermissions.AddRangeAsync(defaultRoles);
+                    await context.SaveChangesAsync();
+                }
+
+                // 9. Ensure Demo Staff Accounts exist for quick testing
+                var staffSeeds = new List<(string Name, string Email, string Password, string Role, string Tier)>
+                {
+                    ("Alexander Sterling (Manager)", "manager@luxehaven.com", "Manager123!", "Manager", "Hotel Executive"),
+                    ("Sophia Chen (Front Desk)", "reception@luxehaven.com", "Staff123!", "Receptionist", "Staff (Receptionist)"),
+                    ("Marcus Vance (Room Ops)", "rooms@luxehaven.com", "Staff123!", "Room Specialist", "Staff (Room Specialist)"),
+                    ("Elena Rostova (Marketing)", "marketing@luxehaven.com", "Staff123!", "Marketing", "Staff (Marketing)"),
+                    ("Liam Davies (Concierge)", "support@luxehaven.com", "Staff123!", "Customer Support", "Staff (Customer Support)")
+                };
+
+                foreach (var (name, email, password, role, tier) in staffSeeds)
+                {
+                    if (!await context.Users.AnyAsync(u => u.Email.ToLower() == email.ToLower()))
+                    {
+                        var (h, s) = passwordHasher.HashPassword(password);
+                        await context.Users.AddAsync(new User
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            Name = name,
+                            Email = email.ToLower(),
+                            PasswordHash = h,
+                            PasswordSalt = s,
+                            MembershipTier = tier,
+                            Role = role,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+                }
+                await context.SaveChangesAsync();
 
                 logger.LogInformation("Database seeding completed successfully.");
             }

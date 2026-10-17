@@ -3,10 +3,12 @@ import {
   User, Mail, Shield, Calendar, MapPin, CreditCard,
   Heart, Star, Clock, ChevronRight, LogOut, Briefcase,
   Search, Filter, ArrowLeft, X, CheckCircle, XCircle,
-  Award, TrendingUp, Sparkles, Edit3, Eye, MessageCircle
+  Award, TrendingUp, Sparkles, Edit3, Eye, MessageCircle,
+  Printer, Banknote
 } from 'lucide-react';
 import CustomerChatWidget from './CustomerChatWidget';
 import InlineChatView from './InlineChatView';
+import VoucherModal from './VoucherModal';
 
 export default function CustomerDashboard({
   currentUser,
@@ -22,6 +24,7 @@ export default function CustomerDashboard({
   const [activeTab, setActiveTab] = useState('overview');
   const [bookingFilter, setBookingFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedVoucherBooking, setSelectedVoucherBooking] = useState(null);
 
   // Computed stats
   const stats = useMemo(() => {
@@ -76,54 +79,65 @@ export default function CustomerDashboard({
       flexDirection: 'column'
     }}>
 
-      {/* ── Purple Header Banner ── */}
+      {/* ── Luxury Obsidian Header Banner ── */}
       <div style={{
-        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%)',
-        padding: '32px 0 32px 0',
+        background: 'linear-gradient(135deg, #090d18 0%, #111827 50%, #0d121f 100%)',
+        padding: '34px 0 34px 0',
         color: '#ffffff',
         position: 'relative',
         overflow: 'hidden',
+        borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.35)',
         flexShrink: 0
       }}>
         <div style={{
-          position: 'absolute', top: 0, right: 0, width: '400px', height: '100%',
-          background: 'radial-gradient(circle at 80% 20%, rgba(244, 114, 182, 0.2) 0%, transparent 70%)',
+          position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+          background: 'linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), rgba(245, 211, 114, 0.85), rgba(212, 175, 55, 0.4), transparent)',
+          zIndex: 2
+        }} />
+        <div style={{
+          position: 'absolute', top: '-50px', right: '-50px', width: '350px', height: '350px',
+          background: 'radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%)',
           pointerEvents: 'none'
         }} />
         <div className="container">
           <button
             onClick={onClose}
             style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem', fontWeight: 500,
-              marginBottom: '16px', background: 'none', border: 'none', cursor: 'pointer'
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              color: 'rgba(255,255,255,0.75)', fontSize: '0.85rem', fontWeight: 500,
+              marginBottom: '16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)',
+              padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s'
             }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#f7df94'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)'; }}
           >
-            <ArrowLeft size={16} /> Back to Home
+            <ArrowLeft size={16} /> Back to LuxeHaven
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
             <div style={{
               width: '64px', height: '64px', borderRadius: '16px',
-              background: 'var(--gold-gradient)', backdropFilter: 'blur(10px)',
+              background: 'linear-gradient(135deg, #e5c158 0%, #b89037 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.5rem', fontWeight: 800, border: '2px solid rgba(255,255,255,0.3)',
-              color: '#fff'
+              fontSize: '1.6rem', fontWeight: 800, border: '2px solid rgba(255,255,255,0.6)',
+              color: '#0b0e14', boxShadow: '0 4px 18px rgba(212,175,55,0.35)'
             }}>
               {currentUser?.name?.charAt(0)?.toUpperCase() || 'G'}
             </div>
             <div>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', margin: 0, fontWeight: 700, color: '#fff' }}>
+              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', margin: 0, fontWeight: 700, color: '#fff' }}>
                 Welcome, {currentUser?.name?.split(' ')[0] || 'Guest'}
               </h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '4px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.88rem', opacity: 0.85 }}>{currentUser?.email}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.7)' }}>{currentUser?.email}</span>
                 <span style={{
-                  background: 'rgba(255,255,255,0.2)', padding: '3px 10px',
-                  borderRadius: '20px', fontSize: '0.72rem', fontWeight: 700,
-                  letterSpacing: '0.05em', border: '1px solid rgba(255,255,255,0.3)'
+                  background: 'rgba(212,175,55,0.18)', color: '#f7df94', padding: '3px 12px',
+                  borderRadius: '20px', fontSize: '0.74rem', fontWeight: 700,
+                  letterSpacing: '0.05em', border: '1px solid rgba(212,175,55,0.35)',
+                  display: 'inline-flex', alignItems: 'center', gap: '4px'
                 }}>
-                  <Sparkles size={10} style={{ marginRight: '4px' }} />
-                  {currentUser?.membershipTier || 'Prestige VIP'}
+                  <Sparkles size={11} />
+                  {currentUser?.membershipTier || 'Prestige VIP Member'}
                 </span>
               </div>
             </div>
@@ -290,6 +304,17 @@ export default function CustomerDashboard({
                       <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                         {booking.checkIn} → {booking.checkOut} · {booking.nights} nights
                       </p>
+                      <div style={{ marginTop: '4px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.68rem', background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '1px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                          💵 {booking.paymentMethod || 'Cash on Arrival'}
+                        </span>
+                        <button
+                          onClick={() => setSelectedVoucherBooking(booking)}
+                          style={{ fontSize: '0.72rem', color: 'var(--gold)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
+                          View Voucher
+                        </button>
+                      </div>
                     </div>
                     <span style={{
                       padding: '4px 10px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 700,
@@ -385,20 +410,40 @@ export default function CustomerDashboard({
                           {booking.currencySymbol || '$'}{booking.convertedTotal || booking.totalAmountUSD}
                         </span>
                       </div>
-                      <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                         <span style={{
                           fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600,
-                          background: 'var(--primary-pale)', padding: '3px 8px', borderRadius: '6px'
+                          background: '#f1f5f9', padding: '3px 8px', borderRadius: '6px'
                         }}>
                           Ref: {booking.id}
                         </span>
+
+                        <span style={{
+                          fontSize: '0.72rem', background: '#ecfdf5', color: '#065f46',
+                          border: '1px solid #a7f3d0', padding: '3px 8px', borderRadius: '6px', fontWeight: 600,
+                          display: 'inline-flex', alignItems: 'center', gap: '4px'
+                        }}>
+                          💵 {booking.paymentMethod || 'Cash on Arrival'}
+                        </span>
+
+                        <button
+                          onClick={() => setSelectedVoucherBooking(booking)}
+                          style={{
+                            fontSize: '0.72rem', color: '#0f172a', fontWeight: 600,
+                            background: '#ffffff', border: '1px solid #cbd5e1', padding: '3px 10px',
+                            borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px'
+                          }}
+                        >
+                          <Printer size={12} /> View Voucher
+                        </button>
+
                         {booking.status === 'Confirmed' && (
                           <button
                             onClick={() => onCancelBooking(booking.id)}
                             style={{
                               fontSize: '0.72rem', color: '#ef4444', fontWeight: 600,
-                              background: '#fef2f2', padding: '3px 8px', borderRadius: '6px',
-                              border: 'none', cursor: 'pointer'
+                              background: '#fef2f2', border: '1px solid #fee2e2', padding: '3px 8px', borderRadius: '6px',
+                              cursor: 'pointer'
                             }}
                           >
                             Cancel Booking
@@ -541,6 +586,14 @@ export default function CustomerDashboard({
 
       {/* Floating Chat Widget — shown on all tabs EXCEPT the chat tab */}
       {activeTab !== 'chat' && <CustomerChatWidget currentUser={currentUser} />}
+
+      {/* Official Luxury Voucher Modal */}
+      {selectedVoucherBooking && (
+        <VoucherModal
+          booking={selectedVoucherBooking}
+          onClose={() => setSelectedVoucherBooking(null)}
+        />
+      )}
     </div>
   );
 }

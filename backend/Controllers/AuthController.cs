@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -26,6 +28,58 @@ namespace hotel_booking_website.Controllers
             _tokenService = tokenService;
         }
 
+        private async Task<List<string>> GetPermissionsForRoleAsync(string? role)
+        {
+            if (string.IsNullOrWhiteSpace(role)) return new List<string>();
+
+            // Super Admin / Manager gets all modules
+            if (string.Equals(role, "Manager", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return new List<string>
+                {
+                    "overview",
+                    "frontpage",
+                    "bookings",
+                    "rooms",
+                    "users",
+                    "reviews",
+                    "newsletter",
+                    "chat",
+                    "roles"
+                };
+            }
+
+            var rp = await _context.RolePermissions
+                .FirstOrDefaultAsync(r => r.RoleName.ToLower() == role.ToLower());
+
+            if (rp != null && rp.AllowedModules != null && rp.AllowedModules.Any())
+            {
+                return rp.AllowedModules;
+            }
+
+            // Fallback default permissions by common role names if not yet customized
+            var rLower = role.ToLower();
+            if (rLower.Contains("reception") || rLower.Contains("front desk"))
+            {
+                return new List<string> { "overview", "bookings", "chat" };
+            }
+            if (rLower.Contains("room") || rLower.Contains("inventory") || rLower.Contains("housekeep"))
+            {
+                return new List<string> { "overview", "rooms" };
+            }
+            if (rLower.Contains("marketing") || rLower.Contains("content"))
+            {
+                return new List<string> { "frontpage", "newsletter", "reviews" };
+            }
+            if (rLower.Contains("support") || rLower.Contains("concierge"))
+            {
+                return new List<string> { "overview", "chat", "reviews", "bookings" };
+            }
+
+            return new List<string> { "overview" };
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto dto)
         {
@@ -51,6 +105,7 @@ namespace hotel_booking_website.Controllers
             await _context.SaveChangesAsync();
 
             var token = _tokenService.GenerateToken(user);
+            var permissions = await GetPermissionsForRoleAsync(user.Role);
 
             return Ok(new AuthResponseDto
             {
@@ -61,7 +116,8 @@ namespace hotel_booking_website.Controllers
                     Name = user.Name,
                     Email = user.Email,
                     MembershipTier = user.MembershipTier,
-                    Role = user.Role
+                    Role = user.Role,
+                    Permissions = permissions
                 }
             });
         }
@@ -82,6 +138,7 @@ namespace hotel_booking_website.Controllers
             }
 
             var token = _tokenService.GenerateToken(user);
+            var permissions = await GetPermissionsForRoleAsync(user.Role);
 
             return Ok(new AuthResponseDto
             {
@@ -92,7 +149,8 @@ namespace hotel_booking_website.Controllers
                     Name = user.Name,
                     Email = user.Email,
                     MembershipTier = user.MembershipTier,
-                    Role = user.Role
+                    Role = user.Role,
+                    Permissions = permissions
                 }
             });
         }
@@ -104,7 +162,6 @@ namespace hotel_booking_website.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == demoEmail);
             if (user == null)
             {
-                // Fallback creation if not found
                 var (hash, salt) = _passwordHasher.HashPassword("Password123!");
                 user = new User
                 {
@@ -121,6 +178,7 @@ namespace hotel_booking_website.Controllers
             }
 
             var token = _tokenService.GenerateToken(user);
+            var permissions = await GetPermissionsForRoleAsync(user.Role);
 
             return Ok(new AuthResponseDto
             {
@@ -131,14 +189,14 @@ namespace hotel_booking_website.Controllers
                     Name = user.Name,
                     Email = user.Email,
                     MembershipTier = user.MembershipTier,
-                    Role = user.Role
+                    Role = user.Role,
+                    Permissions = permissions
                 }
             });
         }
 
         /// <summary>
         /// Register a new manager account (role = Manager).
-        /// This endpoint is for the manager portal only — not accessible to customers.
         /// </summary>
         [HttpPost("manager/register")]
         public async Task<ActionResult<AuthResponseDto>> ManagerRegister([FromBody] RegisterDto dto)
@@ -156,13 +214,15 @@ namespace hotel_booking_website.Controllers
                 Email = dto.Email.ToLower(),
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                MembershipTier = "Hotel Manager",
+                MembershipTier = "Hotel Executive",
                 Role = "Manager",
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
+            var permissions = await GetPermissionsForRoleAsync(user.Role);
 
             return Ok(new AuthResponseDto
             {
@@ -173,13 +233,15 @@ namespace hotel_booking_website.Controllers
                     Name = user.Name,
                     Email = user.Email,
                     MembershipTier = user.MembershipTier,
-                    Role = user.Role
+                    Role = user.Role,
+                    Permissions = permissions
                 }
             });
         }
 
         /// <summary>
-        /// Login for manager portal. Returns 403 if the user is not a manager/admin.
+        /// Login for management dashboard.
+        /// Allows Managers, Admins, and all staff users with designated dashboard roles.
         /// </summary>
         [HttpPost("manager/login")]
         public async Task<ActionResult<AuthResponseDto>> ManagerLogin([FromBody] LoginDto dto)
@@ -196,14 +258,15 @@ namespace hotel_booking_website.Controllers
                 return Unauthorized(new { message = "Invalid email or password." });
             }
 
-            // Block non-manager users from accessing the manager portal
-            var role = user.Role?.ToLower() ?? "";
-            if (role != "manager" && role != "admin")
+            // Block standard customer accounts from accessing the manager/staff portal
+            var role = user.Role?.Trim() ?? "";
+            if (string.Equals(role, "User", StringComparison.OrdinalIgnoreCase))
             {
-                return StatusCode(403, new { message = "Access denied. This portal is restricted to hotel managers only." });
+                return StatusCode(403, new { message = "Access denied. This dashboard is restricted to hotel staff and managers with assigned roles." });
             }
 
             var token = _tokenService.GenerateToken(user);
+            var permissions = await GetPermissionsForRoleAsync(user.Role);
 
             return Ok(new AuthResponseDto
             {
@@ -214,7 +277,8 @@ namespace hotel_booking_website.Controllers
                     Name = user.Name,
                     Email = user.Email,
                     MembershipTier = user.MembershipTier,
-                    Role = user.Role
+                    Role = user.Role,
+                    Permissions = permissions
                 }
             });
         }
@@ -235,13 +299,16 @@ namespace hotel_booking_website.Controllers
                 return NotFound(new { message = "User not found." });
             }
 
+            var permissions = await GetPermissionsForRoleAsync(user.Role);
+
             return Ok(new UserDto
             {
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
                 MembershipTier = user.MembershipTier,
-                Role = user.Role
+                Role = user.Role,
+                Permissions = permissions
             });
         }
     }

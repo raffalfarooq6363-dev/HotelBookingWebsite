@@ -18,6 +18,7 @@ import Footer from './components/Footer';
 import Toast from './components/Toast';
 import CustomerDashboard from './components/CustomerDashboard';
 import ManagerDashboard from './components/ManagerDashboard';
+import VoucherModal from './components/VoucherModal';
 import ManagerAuthPage from './components/ManagerAuthPage';
 
 import { ROOMS_DATA, CURRENCIES } from './data/hotelsData';
@@ -152,7 +153,7 @@ export default function App() {
         guests: '2 Adults',
         selectedAddons: ['VIP Private Chauffeur / Speedboat Transfer', 'Couples Holistic Spa & Aromatherapy (90 Min)'],
         guestDetails: { firstName: 'Alexander', lastName: 'Vance', email: 'alexander.vance@luxury.com' },
-        paymentMethod: 'card',
+        paymentMethod: 'Cash on Arrival',
         totalAmountUSD: 3980,
         currency: 'USD',
         currencySymbol: '$',
@@ -181,6 +182,9 @@ export default function App() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [dashboardView, setDashboardView] = useState(null);
+  // Holds a room to book after the user successfully logs in
+  const [pendingBookingRoom, setPendingBookingRoom] = useState(null);
+  const [viewingVoucherBooking, setViewingVoucherBooking] = useState(null);
 
   // 9. Toast Notifications
   const [toasts, setToasts] = useState([]);
@@ -195,6 +199,17 @@ export default function App() {
 
   const removeToast = (id) => {
     setToasts(prev => prev.filter(t => t.id !== id));
+  };
+
+  // ── Login-gated booking: if user not signed in, open Auth first ──
+  const handleBookNow = (room) => {
+    if (!currentUser) {
+      setPendingBookingRoom(room);
+      setIsAuthOpen(true);
+      addToast('Sign In Required', 'Please sign in or register to complete your reservation.', 'info');
+    } else {
+      setBookingRoom(room);
+    }
   };
 
   // Load live data from Backend API
@@ -386,9 +401,14 @@ export default function App() {
     addToast('Welcome to LuxeClub', `Confirmation transmitted to ${email}. Check your inbox for your 10% welcome privilege!`, 'success');
   };
 
+  const isStaffOrManager = (role) => {
+    if (!role) return false;
+    return role.toLowerCase() !== 'user';
+  };
+
   const handleOpenDashboard = () => {
-    const isManager = ['admin', 'manager'].includes(currentUser?.role?.toLowerCase());
-    setDashboardView(isManager ? 'manager' : 'customer');
+    const isStaff = isStaffOrManager(currentUser?.role);
+    setDashboardView(isStaff ? 'manager' : 'customer');
   };
 
   const handleLogout = () => {
@@ -400,12 +420,12 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {/* ── Manager Portal ── completely separate from customer site */}
-      {isManagerPortal && !['admin', 'manager'].includes(currentUser?.role?.toLowerCase()) && (
+      {/* ── Manager & Staff Portal ── completely separate from customer site */}
+      {isManagerPortal && !isStaffOrManager(currentUser?.role) && (
         <ManagerAuthPage
           onLoginSuccess={(user) => {
             setCurrentUser(user);
-            addToast('Welcome, Manager', `Signed in as ${user.name}. Redirecting to dashboard.`, 'success');
+            addToast('Welcome to Management Portal', `Signed in as ${user.name} (${user.role || 'Staff'}).`, 'success');
           }}
           onBackToSite={() => {
             window.location.hash = '';
@@ -415,8 +435,8 @@ export default function App() {
         />
       )}
 
-      {/* If manager is logged in via manager portal, show Manager Dashboard directly */}
-      {isManagerPortal && ['admin', 'manager'].includes(currentUser?.role?.toLowerCase()) && (
+      {/* If manager or staff is logged in via manager portal, show Manager Dashboard directly */}
+      {isManagerPortal && isStaffOrManager(currentUser?.role) && (
         <ManagerDashboard
           currentUser={currentUser}
           onSiteContentUpdated={loadSiteContent}
@@ -461,7 +481,7 @@ export default function App() {
             onCancelBooking={handleCancelBooking}
             onBookNow={(room) => {
               setDashboardView(null);
-              setBookingRoom(room);
+              handleBookNow(room);
             }}
             onRemoveWishlistItem={(roomId) => {
               setWishlist(prev => prev.filter(room => room.id !== roomId));
@@ -497,7 +517,7 @@ export default function App() {
         wishlist={wishlist}
         onToggleFavorite={handleToggleFavorite}
         onSelectRoom={(room) => setSelectedRoomForDetail(room)}
-        onBookNow={(room) => setBookingRoom(room)}
+        onBookNow={(room) => handleBookNow(room)}
         filters={catalogFilters}
         setFilters={setCatalogFilters}
         onResetFilters={handleResetFilters}
@@ -536,7 +556,7 @@ export default function App() {
           onClose={() => setSelectedRoomForDetail(null)}
           onBookNow={(room) => {
             setSelectedRoomForDetail(null);
-            setBookingRoom(room);
+            handleBookNow(room);
           }}
         />
       )}
@@ -558,11 +578,16 @@ export default function App() {
         onClose={() => setIsBookingsOpen(false)}
         bookings={bookings}
         onCancelBooking={handleCancelBooking}
-        onViewVoucher={(_booking) => {
-          // Open voucher by triggering print or showing summary
-          window.print();
-        }}
+        onViewVoucher={(booking) => setViewingVoucherBooking(booking)}
       />
+
+      {/* Standalone Official Luxury Voucher Modal */}
+      {viewingVoucherBooking && (
+        <VoucherModal
+          booking={viewingVoucherBooking}
+          onClose={() => setViewingVoucherBooking(null)}
+        />
+      )}
 
       {/* Wishlist Drawer */}
       <WishlistDrawer
@@ -576,17 +601,28 @@ export default function App() {
         }}
         onBookNow={(room) => {
           setIsWishlistOpen(false);
-          setBookingRoom(room);
+          handleBookNow(room);
         }}
       />
 
       {/* Sign In / Register Modal */}
       <AuthModal
         isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
+        pendingRoom={pendingBookingRoom}
+        onClose={() => {
+          setIsAuthOpen(false);
+          setPendingBookingRoom(null); // cancel pending if user closes without logging in
+        }}
         onLoginSuccess={(user) => {
           setCurrentUser(user);
-          addToast('Welcome back', `Logged in as ${user.name} (${user.membershipTier}).`, 'success');
+          setIsAuthOpen(false);
+          const tier = user.membershipTier ? ` (${user.membershipTier})` : '';
+          addToast('Welcome back!', `Signed in as ${user.name}${tier}.`, 'success');
+          // Auto-open booking modal if user clicked Book Now before login
+          if (pendingBookingRoom) {
+            setBookingRoom(pendingBookingRoom);
+            setPendingBookingRoom(null);
+          }
         }}
       />
 

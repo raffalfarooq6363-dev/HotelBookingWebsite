@@ -4,10 +4,13 @@ import {
   Mail, TrendingUp, ChevronRight, ArrowLeft, Search,
   CheckCircle, XCircle, Clock, Eye, Trash2, Edit3,
   Shield, Calendar, MapPin, AlertCircle, RefreshCw,
-  Filter, Download, MoreVertical, Image, Upload, Save, Sparkles, Layout, MessageCircle
+  Filter, Download, MoreVertical, Image, Upload, Save, Sparkles, Layout, MessageCircle,
+  Printer
 } from 'lucide-react';
 import { api } from '../services/api';
 import ManagerChatPanel from './ManagerChatPanel';
+import RolePermissionManagement from './RolePermissionManagement';
+import VoucherModal from './VoucherModal';
 
 export default function ManagerDashboard({ currentUser, onClose, onSiteContentUpdated }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -25,6 +28,17 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
   const [refreshing, setRefreshing] = useState(false);
   const [savingContent, setSavingContent] = useState(false);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
+  const [managerVoucherBooking, setManagerVoucherBooking] = useState(null);
+
+  // ── Role-Based Access Control State ──
+  const [userPermissions, setUserPermissions] = useState(() => {
+    if (currentUser?.role?.toLowerCase() === 'manager' || currentUser?.role?.toLowerCase() === 'admin') {
+      return ['overview', 'frontpage', 'bookings', 'rooms', 'users', 'reviews', 'newsletter', 'chat', 'roles'];
+    }
+    return currentUser?.permissions || ['overview'];
+  });
+  const [allAvailableRoles, setAllAvailableRoles] = useState([]);
+  const [previewRole, setPreviewRole] = useState(null); // Manager preview switcher
 
   const [siteContent, setSiteContent] = useState({
     hero: {
@@ -127,7 +141,50 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
     }
   };
 
-  useEffect(() => { loadData(); }, []);
+  // Load permissions for current user or preview role
+  const loadPermissions = async () => {
+    try {
+      const targetRole = previewRole || currentUser?.role || 'Manager';
+      const [rolesRes, permsRes] = await Promise.allSettled([
+        api.getRoles(),
+        api.getRolePermissions(targetRole)
+      ]);
+      if (rolesRes.status === 'fulfilled' && Array.isArray(rolesRes.value)) {
+        setAllAvailableRoles(rolesRes.value);
+      }
+      if (permsRes.status === 'fulfilled' && Array.isArray(permsRes.value)) {
+        setUserPermissions(permsRes.value);
+      }
+    } catch (e) {
+      console.warn('Error fetching role permissions:', e);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+    loadPermissions();
+  }, []);
+
+  useEffect(() => {
+    if (previewRole) {
+      const foundRole = allAvailableRoles.find(r => r.roleName.toLowerCase() === previewRole.toLowerCase());
+      if (foundRole && foundRole.allowedModules) {
+        setUserPermissions(foundRole.allowedModules);
+      } else {
+        api.getRolePermissions(previewRole).then(perms => {
+          if (Array.isArray(perms)) setUserPermissions(perms);
+        }).catch(err => console.warn(err));
+      }
+    } else {
+      if (currentUser?.role?.toLowerCase() === 'manager' || currentUser?.role?.toLowerCase() === 'admin') {
+        setUserPermissions(['overview', 'frontpage', 'bookings', 'rooms', 'users', 'reviews', 'newsletter', 'chat', 'roles']);
+      } else {
+        api.getRolePermissions(currentUser?.role || 'Staff').then(perms => {
+          if (Array.isArray(perms)) setUserPermissions(perms);
+        }).catch(err => console.warn(err));
+      }
+    }
+  }, [previewRole]);
 
   // Booking status update
   const handleUpdateBookingStatus = async (bookingId, newStatus) => {
@@ -241,7 +298,7 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
     }
   };
 
-  const tabs = [
+  const allTabs = useMemo(() => [
     { id: 'overview', label: 'Dashboard', icon: BarChart3 },
     { id: 'frontpage', label: 'Front Page & Images', icon: Layout },
     { id: 'bookings', label: 'Bookings', icon: Briefcase },
@@ -249,8 +306,23 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
     { id: 'users', label: 'Users', icon: Users },
     { id: 'reviews', label: 'Reviews', icon: Star },
     { id: 'newsletter', label: 'Newsletter', icon: Mail },
-    { id: 'chat', label: 'Customer Chat', icon: MessageCircle }
-  ];
+    { id: 'chat', label: 'Customer Chat', icon: MessageCircle },
+    { id: 'roles', label: 'Role & Permissions', icon: Shield }
+  ], []);
+
+  // Compute visible tabs dynamically based on user permissions
+  const visibleTabs = useMemo(() => {
+    const isSuperManager = (currentUser?.role?.toLowerCase() === 'manager' || currentUser?.role?.toLowerCase() === 'admin') && !previewRole;
+    if (isSuperManager) return allTabs;
+    return allTabs.filter(tab => userPermissions.includes(tab.id));
+  }, [allTabs, userPermissions, currentUser, previewRole]);
+
+  // Keep activeTab on an authorized tab
+  useEffect(() => {
+    if (visibleTabs.length > 0 && !visibleTabs.some(t => t.id === activeTab)) {
+      setActiveTab(visibleTabs[0].id);
+    }
+  }, [visibleTabs, activeTab]);
 
   if (loading) {
     return (
@@ -266,15 +338,24 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-main)', paddingTop: 'var(--nav-height)' }}>
-      {/* Dashboard Header */}
+      {/* Luxury Obsidian Dashboard Header */}
       <div style={{
-        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%)',
+        background: 'linear-gradient(135deg, #090d18 0%, #111827 50%, #0d121f 100%)',
         padding: '36px 0 46px 0',
-        color: '#ffffff', position: 'relative', overflow: 'hidden'
+        color: '#ffffff',
+        position: 'relative',
+        overflow: 'hidden',
+        borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)'
       }}>
         <div style={{
-          position: 'absolute', top: '-50px', right: '-50px', width: '300px', height: '300px',
-          borderRadius: '50%', background: 'rgba(244,114,182,0.12)', pointerEvents: 'none'
+          position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+          background: 'linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), rgba(245, 211, 114, 0.85), rgba(212, 175, 55, 0.4), transparent)',
+          zIndex: 2
+        }} />
+        <div style={{
+          position: 'absolute', top: '-60px', right: '-60px', width: '320px', height: '320px',
+          borderRadius: '50%', background: 'radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%)', pointerEvents: 'none'
         }} />
         <div className="container">
           <button
@@ -289,37 +370,113 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
           </button>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
                 <Shield size={18} style={{ color: 'var(--gold-bright)' }} />
                 <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 700, color: 'var(--gold-bright)' }}>
-                  Manager Control Panel
+                  Manager &amp; Staff Operations Portal
+                </span>
+                <span style={{
+                  background: 'rgba(255,255,255,0.18)', padding: '2px 10px', borderRadius: '12px',
+                  fontSize: '0.72rem', fontWeight: 800, border: '1px solid rgba(255,255,255,0.25)',
+                  letterSpacing: '0.04em'
+                }}>
+                  Role: {previewRole || currentUser?.role || 'Staff'}
+                </span>
+                <span style={{
+                  background: 'rgba(34,197,94,0.25)', color: '#86efac', padding: '2px 10px', borderRadius: '12px',
+                  fontSize: '0.72rem', fontWeight: 800, border: '1px solid rgba(34,197,94,0.35)'
+                }}>
+                  {visibleTabs.length} of {allTabs.length} Modules Authorized
                 </span>
               </div>
               <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', margin: 0, fontWeight: 700, color: '#fff' }}>
                 Hotel Operations Dashboard
               </h1>
-              <p style={{ margin: '4px 0 0', fontSize: '0.88rem', opacity: 0.8 }}>
-                Signed in as {currentUser?.name} · {currentUser?.role || 'Admin'}
+              <p style={{ margin: '4px 0 0', fontSize: '0.88rem', opacity: 0.85 }}>
+                Signed in as <strong style={{ color: '#fff' }}>{currentUser?.name}</strong> · Role: <strong style={{ color: 'var(--gold-bright)' }}>{currentUser?.role || 'Staff'}</strong>
               </p>
             </div>
-            <button
-              onClick={loadData}
-              disabled={refreshing}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '6px',
-                padding: '10px 18px', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 600,
-                background: 'rgba(255,255,255,0.15)', color: '#ffffff',
-                border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer',
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              <RefreshCw size={14} style={refreshing ? { animation: 'spin 1s linear infinite' } : {}} />
-              {refreshing ? 'Refreshing...' : 'Refresh Data'}
-            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              {/* Role Preview Switcher for Manager */}
+              {(currentUser?.role?.toLowerCase() === 'manager' || currentUser?.role?.toLowerCase() === 'admin') && (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  background: 'rgba(0,0,0,0.3)', padding: '6px 12px', borderRadius: '10px',
+                  border: '1px solid rgba(255,255,255,0.2)'
+                }}>
+                  <Eye size={14} style={{ color: 'var(--gold-bright)' }} />
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
+                    Preview Role:
+                  </span>
+                  <select
+                    value={previewRole || ''}
+                    onChange={e => {
+                      const selected = e.target.value;
+                      setPreviewRole(selected || null);
+                    }}
+                    style={{
+                      background: 'rgba(255,255,255,0.18)', color: '#ffffff',
+                      border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px',
+                      padding: '4px 8px', fontSize: '0.78rem', fontWeight: 700,
+                      outline: 'none', cursor: 'pointer'
+                    }}
+                  >
+                    <option value="" style={{ color: '#000' }}>👑 Full Executive Manager (All 9 Modules)</option>
+                    {allAvailableRoles
+                      .filter(r => r.roleName.toLowerCase() !== 'manager' && r.roleName.toLowerCase() !== 'admin')
+                      .map(r => (
+                        <option key={r.id} value={r.roleName} style={{ color: '#000' }}>
+                          👤 {r.roleName} ({(r.allowedModules || []).length} modules)
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
+
+              <button
+                onClick={loadData}
+                disabled={refreshing}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '10px 18px', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 600,
+                  background: 'rgba(255,255,255,0.15)', color: '#ffffff',
+                  border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer',
+                  backdropFilter: 'blur(10px)'
+                }}
+              >
+                <RefreshCw size={14} style={refreshing ? { animation: 'spin 1s linear infinite' } : {}} />
+                {refreshing ? 'Refreshing...' : 'Refresh Data'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Role Preview Banner notice */}
+      {previewRole && (
+        <div style={{
+          background: '#fef3c7', borderBottom: '1px solid #fde68a',
+          padding: '10px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          color: '#92400e', fontSize: '0.86rem', fontWeight: 600
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={16} />
+            <span>
+              Preview Mode Active: Testing dashboard visibility for <strong>"{previewRole}"</strong>. Only modules assigned to this role are displayed.
+            </span>
+          </div>
+          <button
+            onClick={() => setPreviewRole(null)}
+            style={{
+              padding: '4px 12px', background: '#92400e', color: '#fff',
+              border: 'none', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer'
+            }}
+          >
+            Exit Preview
+          </button>
+        </div>
+      )}
 
       {/* ─── MAIN BODY: Sidebar + Content ─── */}
       <div style={{ display: 'flex', minHeight: 'calc(100vh - var(--nav-height) - 130px)' }}>
@@ -340,18 +497,21 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
           boxShadow: '2px 0 8px rgba(0,0,0,0.04)'
         }}>
           {/* Sidebar label */}
-          <div style={{ padding: '10px 20px 14px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ padding: '10px 20px 14px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{
               fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.14em',
               textTransform: 'uppercase', color: '#4a4a6a'
             }}>
               Navigation
             </span>
+            <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--primary)', background: 'var(--primary-pale)', padding: '2px 6px', borderRadius: '10px' }}>
+              {visibleTabs.length} Modules
+            </span>
           </div>
 
           {/* Tab buttons */}
           <nav style={{ flex: 1, padding: '10px 10px' }}>
-            {tabs.map(tab => {
+            {visibleTabs.map(tab => {
               const isActive = activeTab === tab.id;
               return (
                 <button
@@ -964,7 +1124,7 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                   <thead>
                     <tr style={{ background: 'var(--primary-pale)', borderBottom: '1px solid var(--border)' }}>
-                      {['Booking ID', 'Guest', 'Room', 'Dates', 'Amount', 'Status', 'Actions'].map(h => (
+                      {['Booking ID', 'Guest', 'Room', 'Dates', 'Amount', 'Payment Method', 'Status', 'Actions'].map(h => (
                         <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, color: 'var(--primary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                           {h}
                         </th>
@@ -987,6 +1147,15 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
                         <td style={{ padding: '12px 14px', fontWeight: 700, color: 'var(--text-main)' }}>${b.totalAmountUSD}</td>
                         <td style={{ padding: '12px 14px' }}>
                           <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '4px',
+                            padding: '3px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700,
+                            background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0'
+                          }}>
+                            <DollarSign size={12} /> {b.paymentMethod || 'Cash on Arrival'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 14px' }}>
+                          <span style={{
                             padding: '3px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 700,
                             background: b.status === 'Confirmed' ? '#ecfdf5' : b.status === 'Cancelled' ? '#fef2f2' : '#fffbeb',
                             color: b.status === 'Confirmed' ? '#059669' : b.status === 'Cancelled' ? '#dc2626' : '#d97706'
@@ -995,7 +1164,18 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
                           </span>
                         </td>
                         <td style={{ padding: '12px 14px' }}>
-                          <div style={{ display: 'flex', gap: '4px' }}>
+                          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                            <button
+                              onClick={() => setManagerVoucherBooking(b)}
+                              title="View & Print Official Cash Voucher"
+                              style={{
+                                padding: '5px 8px', borderRadius: '6px', fontSize: '0.72rem',
+                                background: '#ffffff', color: '#0f172a', border: '1px solid #cbd5e1', cursor: 'pointer',
+                                display: 'inline-flex', alignItems: 'center'
+                              }}
+                            >
+                              <Printer size={13} />
+                            </button>
                             {b.status === 'Confirmed' && (
                               <button
                                 onClick={() => handleUpdateBookingStatus(b.id, 'Cancelled')}
@@ -1298,8 +1478,24 @@ export default function ManagerDashboard({ currentUser, onClose, onSiteContentUp
             <ManagerChatPanel currentUser={currentUser} />
           </div>
         )}
+
+        {/* ─── ROLE & PERMISSION MANAGEMENT TAB ─── */}
+        {activeTab === 'roles' && (
+          <RolePermissionManagement
+            currentUser={currentUser}
+            onRolesUpdated={loadPermissions}
+          />
+        )}
         </main>
       </div>
+
+      {/* Official Luxury Voucher Modal for Front Desk Staff & Manager */}
+      {managerVoucherBooking && (
+        <VoucherModal
+          booking={managerVoucherBooking}
+          onClose={() => setManagerVoucherBooking(null)}
+        />
+      )}
     </div>
   );
 }
