@@ -23,7 +23,7 @@ export default function FilterSidebar({
   return (
     <aside
       style={{
-        background: '#ffffff',
+        background: 'var(--bg-card)',
         borderRadius: '16px',
         border: '1px solid var(--border-subtle)',
         padding: '24px',
@@ -34,7 +34,7 @@ export default function FilterSidebar({
       }}
     >
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #d4e4dd', paddingBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Filter size={18} style={{ color: 'var(--gold)' }} />
           <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Filter Stays</h3>
@@ -71,8 +71,8 @@ export default function FilterSidebar({
                 borderRadius: 'var(--radius-full)',
                 border: '1px solid',
                 borderColor: filters.category === cat ? 'var(--gold)' : 'var(--border-subtle)',
-                background: filters.category === cat ? 'var(--gold-light)' : '#ffffff',
-                color: filters.category === cat ? '#3d6b5e' : 'var(--text-muted)',
+                background: filters.category === cat ? 'rgba(212, 175, 55, 0.18)' : 'rgba(255, 255, 255, 0.04)',
+                color: filters.category === cat ? '#f7df94' : 'rgba(255, 255, 255, 0.7)',
                 transition: 'all 0.2s ease'
               }}
             >
@@ -137,8 +137,8 @@ export default function FilterSidebar({
                 fontWeight: 600,
                 border: '1px solid',
                 borderColor: filters.minRating === r.val ? 'var(--gold)' : 'var(--border-subtle)',
-                background: filters.minRating === r.val ? 'var(--gold-light)' : '#f6f9f8',
-                color: filters.minRating === r.val ? '#3d6b5e' : 'var(--text-muted)'
+                background: filters.minRating === r.val ? 'rgba(212, 175, 55, 0.18)' : 'rgba(255, 255, 255, 0.04)',
+                color: filters.minRating === r.val ? '#f7df94' : 'rgba(255, 255, 255, 0.7)'
               }}
             >
               {r.val > 0 && <Star size={13} style={{ fill: '#eab308', color: '#eab308' }} />}
@@ -174,8 +174,8 @@ export default function FilterSidebar({
                   width: '18px',
                   height: '18px',
                   borderRadius: '4px',
-                  border: isChecked ? '1px solid var(--gold)' : '1px solid #cbd5e1',
-                  background: isChecked ? 'var(--gold)' : '#ffffff',
+                  border: isChecked ? '1px solid var(--gold)' : '1px solid rgba(255, 255, 255, 0.2)',
+                  background: isChecked ? 'var(--gold)' : 'rgba(255, 255, 255, 0.06)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

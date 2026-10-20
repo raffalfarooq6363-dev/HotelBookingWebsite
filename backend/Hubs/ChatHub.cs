@@ -41,9 +41,14 @@ namespace hotel_booking_website.Hubs
         {
             if (string.IsNullOrWhiteSpace(message)) return;
 
+            // Ensure canonical conversationId (always conv_{id})
+            var clean = conversationId.StartsWith("conv_") ? conversationId.Substring(5) : conversationId;
+            clean = clean.EndsWith("-widget") ? clean.Substring(0, clean.Length - 7) : clean;
+            var canonicalConvId = string.IsNullOrWhiteSpace(clean) ? conversationId : $"conv_{clean}";
+
             var chatMsg = new ChatMessage
             {
-                ConversationId = conversationId,
+                ConversationId = canonicalConvId,
                 SenderId = senderId,
                 SenderName = senderName,
                 SenderRole = senderRole,
@@ -56,8 +61,7 @@ namespace hotel_booking_website.Hubs
             _context.ChatMessages.Add(chatMsg);
             await _context.SaveChangesAsync();
 
-            // Broadcast to everyone in the conversation group
-            await Clients.Group(conversationId).SendAsync("ReceiveMessage", new
+            var payload = new
             {
                 chatMsg.Id,
                 chatMsg.ConversationId,
@@ -68,7 +72,14 @@ namespace hotel_booking_website.Hubs
                 chatMsg.CreatedAt,
                 chatMsg.IsReadByManager,
                 chatMsg.IsReadByCustomer
-            });
+            };
+
+            // Broadcast to canonical group
+            await Clients.Group(canonicalConvId).SendAsync("ReceiveMessage", payload);
+            if (canonicalConvId != conversationId)
+            {
+                await Clients.Group(conversationId).SendAsync("ReceiveMessage", payload);
+            }
         }
 
         /// <summary>

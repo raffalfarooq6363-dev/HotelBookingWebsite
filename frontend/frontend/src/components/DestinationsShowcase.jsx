@@ -11,7 +11,7 @@ export default function DestinationsShowcase({ onSelectDestination, metaData, de
   const description = metaData?.description || 'From secluded private atolls in the Indian Ocean to chic Parisian boulevards, find sanctuary in the world’s most coveted locales.';
 
   return (
-    <section id="destinations" className="section-padding" style={{ backgroundColor: '#ffffff' }}>
+    <section id="destinations" className="section-padding" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <div className="container">
         <div className="section-header">
           <span className="section-subtitle">{subtitle}</span>

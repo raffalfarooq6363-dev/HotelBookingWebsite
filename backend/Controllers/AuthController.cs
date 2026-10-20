@@ -30,7 +30,7 @@ namespace hotel_booking_website.Controllers
 
         private async Task<List<string>> GetPermissionsForRoleAsync(string? role)
         {
-            if (string.IsNullOrWhiteSpace(role)) return new List<string>();
+            if (string.IsNullOrWhiteSpace(role) || string.Equals(role, "User", StringComparison.OrdinalIgnoreCase)) return new List<string>();
 
             // Super Admin / Manager gets all modules
             if (string.Equals(role, "Manager", StringComparison.OrdinalIgnoreCase) ||
@@ -83,7 +83,13 @@ namespace hotel_booking_website.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email.ToLower() == dto.Email.ToLower()))
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+            {
+                return BadRequest(new { message = "Email and password are required." });
+            }
+
+            var cleanEmail = dto.Email.Trim().ToLower();
+            if (await _context.Users.AnyAsync(u => u.Email.ToLower() == cleanEmail))
             {
                 return BadRequest(new { message = "An account with this email address already exists." });
             }
@@ -92,8 +98,8 @@ namespace hotel_booking_website.Controllers
             var user = new User
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = dto.Name,
-                Email = dto.Email.ToLower(),
+                Name = string.IsNullOrWhiteSpace(dto.Name) ? "Luxury Guest" : dto.Name.Trim(),
+                Email = cleanEmail,
                 PasswordHash = hash,
                 PasswordSalt = salt,
                 MembershipTier = "Prestige VIP",
@@ -125,31 +131,50 @@ namespace hotel_booking_website.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == dto.Email.ToLower());
-            if (user == null)
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
             {
-                return Unauthorized(new { message = "Invalid email or password." });
+                return BadRequest(new { message = "Email (or username) and password are required." });
             }
 
-            var isValid = _passwordHasher.VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt);
-            if (!isValid)
+            var cleanIdentifier = dto.Email.Trim().ToLower();
+            var candidates = await _context.Users
+                .Where(u => u.Email.ToLower() == cleanIdentifier || u.Name.ToLower() == cleanIdentifier)
+                .OrderByDescending(u => u.CreatedAt)
+                .ToListAsync();
+
+            if (!candidates.Any())
             {
-                return Unauthorized(new { message = "Invalid email or password." });
+                return Unauthorized(new { message = "No account found matching this email or username." });
             }
 
-            var token = _tokenService.GenerateToken(user);
-            var permissions = await GetPermissionsForRoleAsync(user.Role);
+            User? matchedUser = null;
+            foreach (var candidate in candidates)
+            {
+                if (_passwordHasher.VerifyPassword(dto.Password, candidate.PasswordHash, candidate.PasswordSalt))
+                {
+                    matchedUser = candidate;
+                    break;
+                }
+            }
+
+            if (matchedUser == null)
+            {
+                return Unauthorized(new { message = "Incorrect password. Please verify and try again." });
+            }
+
+            var token = _tokenService.GenerateToken(matchedUser);
+            var permissions = await GetPermissionsForRoleAsync(matchedUser.Role);
 
             return Ok(new AuthResponseDto
             {
                 Token = token,
                 User = new UserDto
                 {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    MembershipTier = user.MembershipTier,
-                    Role = user.Role,
+                    Id = matchedUser.Id,
+                    Name = matchedUser.Name,
+                    Email = matchedUser.Email,
+                    MembershipTier = matchedUser.MembershipTier,
+                    Role = matchedUser.Role,
                     Permissions = permissions
                 }
             });

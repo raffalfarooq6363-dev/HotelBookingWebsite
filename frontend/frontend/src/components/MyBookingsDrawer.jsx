@@ -32,15 +32,15 @@ export default function MyBookingsDrawer({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '24px',
-          borderBottom: '1px solid rgba(89, 135, 125, 0.3)',
-          background: 'linear-gradient(135deg, #f0f7f4 0%, #e0eeea 100%)',
-          color: '#1a2e28'
+          borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+          background: 'linear-gradient(135deg, #090d18 0%, #111827 50%, #0d121f 100%)',
+          color: '#ffffff'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Briefcase size={22} style={{ color: 'var(--gold)' }} />
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#1a2e28', fontFamily: 'var(--font-serif)' }}>My Reservations</h3>
-              <p style={{ margin: 0, fontSize: '0.8rem', color: '#5a7a70' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#ffffff', fontFamily: 'var(--font-serif)' }}>My Reservations</h3>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.65)' }}>
                 {bookings.length} {bookings.length === 1 ? 'active booking' : 'active bookings'}
               </p>
             </div>
@@ -48,9 +48,9 @@ export default function MyBookingsDrawer({
           <button
             onClick={onClose}
             style={{
-              color: '#5a7a70',
-              background: '#ffffff',
-              border: '1px solid #d4e4dd',
+              color: 'rgba(255, 255, 255, 0.65)',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.16)',
               padding: '6px',
               borderRadius: '50%',
               display: 'flex',

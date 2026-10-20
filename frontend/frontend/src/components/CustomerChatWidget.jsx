@@ -1,56 +1,145 @@
-import React, { useState, useEffect } from 'react';
-import { MessageCircle, X, Send, Clock } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { MessageCircle, X, Send, Sparkles } from 'lucide-react';
+import * as signalR from '@microsoft/signalr';
 import { api } from '../services/api';
+
+const HUB_URL = 'http://localhost:5080/hubs/chat';
 
 export default function CustomerChatWidget({ currentUser }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
-  const [conversationId, setConversationId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [connected, setConnected] = useState(false);
 
-  // Initialize chat
+  const messagesEndRef = useRef(null);
+  const connectionRef = useRef(null);
+
+  // ── Unified, Stable conversation ID ──
+  // Always conv_{userId} so both widget and customer dashboard show the exact same chat
+  const conversationId = currentUser?.id
+    ? `conv_${currentUser.id}`
+    : (typeof window !== 'undefined'
+        ? localStorage.getItem('luxehaven_guest_chat_id') || (() => {
+            const gid = 'conv_guest_' + Math.random().toString(36).substring(2, 10);
+            localStorage.setItem('luxehaven_guest_chat_id', gid);
+            return gid;
+          })()
+        : 'conv_guest');
+
+  // Auto-scroll
   useEffect(() => {
-    if (currentUser?.id) {
-      const convId = `${currentUser.id}-widget`;
-      setConversationId(convId);
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [currentUser?.id]);
+  }, [messages, isOpen]);
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || sending || !conversationId) return;
+  // Load chat history & initialize SignalR connection
+  useEffect(() => {
+    if (!conversationId) return;
 
-    const msg = {
-      id: Date.now().toString(),
-      sender: currentUser?.name || 'Guest',
-      senderRole: 'customer',
-      text: input.trim(),
-      timestamp: new Date().toISOString()
+    let mounted = true;
+
+    const loadHistory = async () => {
+      setLoading(true);
+      try {
+        const data = await api.getChatMessages(conversationId);
+        if (mounted && Array.isArray(data)) {
+          setMessages(data);
+        }
+      } catch (e) {
+        console.warn('Failed to load chat history:', e);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     };
 
-    setMessages(prev => [...prev, msg]);
+    loadHistory();
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(HUB_URL, { withCredentials: true })
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Warning)
+      .build();
+
+    connection.on('ReceiveMessage', (msg) => {
+      if (!mounted) return;
+      const cleanTarget = conversationId.replace('conv_', '');
+      const msgConvClean = (msg.conversationId || '').replace('conv_', '').replace('-widget', '');
+      if (msgConvClean === cleanTarget || msg.conversationId === conversationId) {
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        });
+      }
+    });
+
+    const startSignalR = async () => {
+      try {
+        await connection.start();
+        await connection.invoke('JoinConversation', conversationId);
+        if (mounted) setConnected(true);
+      } catch (e) {
+        console.warn('Chat SignalR connection failed, using REST fallback:', e);
+      }
+    };
+
+    startSignalR();
+    connectionRef.current = connection;
+
+    return () => {
+      mounted = false;
+      if (connectionRef.current) {
+        connectionRef.current.stop();
+        connectionRef.current = null;
+      }
+    };
+  }, [conversationId]);
+
+  const handleSendMessage = async (e) => {
+    e?.preventDefault();
+    const text = input.trim();
+    if (!text || sending || !conversationId) return;
+
     setSending(true);
     setInput('');
 
-    try {
-      await api.sendChatMessage({
-        conversationId,
-        senderRole: 'customer',
-        message: input.trim(),
-        senderName: currentUser?.name || 'Guest'
-      });
+    const senderId = currentUser?.id || 'guest';
+    const senderName = currentUser?.name || 'Guest';
 
-      // Simulate response
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
-          sender: 'Hotel Support',
-          senderRole: 'manager',
-          text: 'Thanks for reaching out! How can we help you today?',
-          timestamp: new Date().toISOString()
-        }]);
-      }, 800);
+    try {
+      if (connectionRef.current?.state === signalR.HubConnectionState.Connected) {
+        await connectionRef.current.invoke(
+          'SendMessage',
+          conversationId,
+          senderId,
+          senderName,
+          'User',
+          text
+        );
+      } else {
+        const saved = await api.sendChatMessage({
+          conversationId,
+          senderId,
+          senderName,
+          senderRole: 'User',
+          message: text,
+        });
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: saved.id || Date.now(),
+            conversationId,
+            senderId,
+            senderName,
+            senderRole: 'User',
+            message: text,
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+      }
     } catch (e) {
       console.warn('Failed to send message:', e);
     } finally {
@@ -58,9 +147,18 @@ export default function CustomerChatWidget({ currentUser }) {
     }
   };
 
+  const formatTime = (dateStr) => {
+    if (!dateStr) return '';
+    try {
+      return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return '';
+    }
+  };
+
   return (
     <>
-      {/* Chat Widget Button */}
+      {/* Floating Chat Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
@@ -70,190 +168,306 @@ export default function CustomerChatWidget({ currentUser }) {
           width: '56px',
           height: '56px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%)',
-          color: '#ffffff',
-          border: 'none',
+          background: 'linear-gradient(135deg, #e5c158 0%, #d4af37 50%, #b89037 100%)',
+          color: '#0c0f17',
+          border: '1.5px solid rgba(255, 240, 190, 0.6)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(147, 51, 234, 0.4)',
+          boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.4)',
           zIndex: 999,
-          transition: 'all 0.3s ease',
-          transform: isOpen ? 'scale(0.9)' : 'scale(1)',
-          ':hover': {
-            boxShadow: '0 8px 30px rgba(147, 51, 234, 0.5)'
-          }
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          transform: isOpen ? 'scale(0.92)' : 'scale(1)',
         }}
-        onMouseEnter={e => e.currentTarget.style.boxShadow = '0 8px 30px rgba(147, 51, 234, 0.5)'}
-        onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(147, 51, 234, 0.4)'}
+        title="Direct Chat with Hotel Management"
+        aria-label="Open Live Chat"
       >
-        {isOpen ? <X size={28} /> : <MessageCircle size={28} />}
+        {isOpen ? <X size={26} strokeWidth={2.4} /> : <MessageCircle size={26} strokeWidth={2.4} />}
       </button>
 
-      {/* Chat Window */}
+      {/* Unified Chat Window */}
       {isOpen && (
-        <div style={{
-          position: 'fixed',
-          bottom: '100px',
-          right: '24px',
-          width: '380px',
-          height: '500px',
-          background: '#ffffff',
-          borderRadius: '16px',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.15)',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          zIndex: 998,
-          animation: 'slideUp 0.3s ease'
-        }}>
-          {/* Header */}
-          <div style={{
-            background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%)',
-            color: '#ffffff',
-            padding: '16px 20px',
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '95px',
+            right: '24px',
+            width: '390px',
+            maxWidth: 'calc(100vw - 32px)',
+            height: '540px',
+            maxHeight: 'calc(100vh - 120px)',
+            background: 'linear-gradient(165deg, rgba(16, 22, 38, 0.98) 0%, rgba(9, 13, 24, 0.99) 100%)',
+            borderRadius: '18px',
+            border: '1px solid rgba(212, 175, 55, 0.35)',
+            boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.2)',
+            overflow: 'hidden',
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div>
-              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>
-                Chat Support
-              </h4>
-              <p style={{ margin: '2px 0 0', fontSize: '0.75rem', opacity: 0.8 }}>
-                We typically reply in minutes
-              </p>
+            flexDirection: 'column',
+            zIndex: 998,
+            animation: 'chatSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
+          {/* Header */}
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #090d18 0%, #111827 50%, #0d121f 100%)',
+              borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+              color: '#ffffff',
+              padding: '16px 20px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '9px',
+                  background: 'linear-gradient(135deg, #e5c158 0%, #d4af37 50%, #b89037 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#0c0f17',
+                  boxShadow: '0 2px 10px rgba(212, 175, 55, 0.3)',
+                }}
+              >
+                <Sparkles size={18} strokeWidth={2.4} />
+              </div>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, fontFamily: 'var(--font-serif)' }}>
+                  LuxeHaven Concierge &amp; Staff
+                </h4>
+                <div style={{ fontSize: '0.72rem', color: '#f7df94', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                  <span
+                    style={{
+                      width: '7px',
+                      height: '7px',
+                      borderRadius: '50%',
+                      background: connected ? '#10b981' : '#f59e0b',
+                      display: 'inline-block',
+                    }}
+                  />
+                  <span>{connected ? 'Live Connected' : 'Connecting...'}</span>
+                </div>
+              </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
               style={{
-                background: 'rgba(255,255,255,0.2)',
-                border: 'none',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.14)',
                 color: '#ffffff',
-                width: '28px',
-                height: '28px',
-                borderRadius: '6px',
+                width: '30px',
+                height: '30px',
+                borderRadius: '8px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                transition: 'all 0.2s',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.16)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)')}
             >
-              <X size={18} />
+              <X size={17} />
             </button>
           </div>
 
-          {/* Messages */}
-          <div style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            background: 'var(--bg-secondary)'
-          }}>
-            {messages.length === 0 && (
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                textAlign: 'center',
-                color: 'var(--text-muted)'
-              }}>
-                <MessageCircle size={40} style={{ opacity: 0.3, marginBottom: '10px' }} />
-                <p style={{ margin: 0, fontWeight: 600, fontSize: '0.9rem' }}>
-                  Hello! Need help?
-                </p>
-                <p style={{ margin: '4px 0 0', fontSize: '0.8rem' }}>
-                  Ask us anything about your stay
-                </p>
+          {/* Messages Body */}
+          <div
+            style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: '18px 16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              background: 'rgba(5, 8, 15, 0.5)',
+            }}
+          >
+            {loading ? (
+              <div style={{ textAlign: 'center', margin: 'auto', color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.85rem' }}>
+                <p>Loading messages...</p>
               </div>
-            )}
-            {messages.map(msg => (
+            ) : messages.length === 0 ? (
               <div
-                key={msg.id}
                 style={{
                   display: 'flex',
-                  justifyContent: msg.senderRole === 'customer' ? 'flex-end' : 'flex-start'
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  textAlign: 'center',
+                  color: 'rgba(255, 255, 255, 0.55)',
+                  padding: '20px',
                 }}
               >
                 <div
                   style={{
-                    background: msg.senderRole === 'customer' ? 'var(--primary)' : '#ffffff',
-                    color: msg.senderRole === 'customer' ? '#ffffff' : 'var(--text-main)',
-                    padding: '9px 12px',
-                    borderRadius: msg.senderRole === 'customer' ? '12px 3px 12px 12px' : '3px 12px 12px 12px',
-                    maxWidth: '80%',
-                    wordWrap: 'break-word',
-                    fontSize: '0.85rem',
-                    lineHeight: 1.4,
-                    border: msg.senderRole === 'manager' ? '1px solid var(--border-light)' : 'none'
+                    width: '46px',
+                    height: '46px',
+                    borderRadius: '50%',
+                    background: 'rgba(212, 175, 55, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '12px',
+                    color: '#d4af37',
                   }}
                 >
-                  {msg.text}
+                  <MessageCircle size={24} />
                 </div>
+                <p style={{ margin: 0, fontWeight: 700, fontSize: '0.95rem', color: '#ffffff' }}>
+                  Direct Guest Support
+                </p>
+                <p style={{ margin: '6px 0 0', fontSize: '0.8rem', lineHeight: 1.5 }}>
+                  Ask us anything about your reservation, special suite requests, or dining arrangements. All your messages will be saved here in one chat.
+                </p>
               </div>
-            ))}
+            ) : (
+              messages.map((msg, idx) => {
+                const isMe = msg.senderRole === 'User' || msg.senderRole === 'customer';
+                return (
+                  <div
+                    key={msg.id || idx}
+                    style={{
+                      display: 'flex',
+                      justifyContent: isMe ? 'flex-end' : 'flex-start',
+                      gap: '8px',
+                      alignItems: 'flex-end',
+                    }}
+                  >
+                    {!isMe && (
+                      <div
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '8px',
+                          background: 'linear-gradient(135deg, #e5c158, #b89037)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#0c0f17',
+                          fontSize: '0.72rem',
+                          fontWeight: 800,
+                          flexShrink: 0,
+                        }}
+                      >
+                        H
+                      </div>
+                    )}
+                    <div
+                      style={{
+                        background: isMe
+                          ? 'linear-gradient(135deg, #e5c158 0%, #d4af37 100%)'
+                          : 'rgba(255, 255, 255, 0.08)',
+                        color: isMe ? '#0c0f17' : '#ffffff',
+                        padding: '10px 14px',
+                        borderRadius: isMe ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+                        maxWidth: '78%',
+                        wordWrap: 'break-word',
+                        fontSize: '0.88rem',
+                        lineHeight: 1.45,
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                        border: isMe ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          opacity: isMe ? 0.75 : 0.6,
+                          marginBottom: '3px',
+                        }}
+                      >
+                        {msg.senderName || (isMe ? 'You' : 'Hotel Staff')}
+                      </div>
+                      <div style={{ fontWeight: isMe ? 600 : 400 }}>{msg.message || msg.text}</div>
+                      <div
+                        style={{
+                          fontSize: '0.65rem',
+                          opacity: isMe ? 0.75 : 0.5,
+                          textAlign: 'right',
+                          marginTop: '4px',
+                        }}
+                      >
+                        {formatTime(msg.createdAt || msg.timestamp)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
+          {/* Input Footer */}
           <form
             onSubmit={handleSendMessage}
             style={{
-              padding: '12px 16px',
-              borderTop: '1px solid var(--border)',
+              padding: '14px 16px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
               display: 'flex',
-              gap: '8px',
-              background: '#ffffff'
+              gap: '10px',
+              background: 'rgba(10, 14, 25, 0.95)',
             }}
           >
             <input
               type="text"
-              placeholder="Type message..."
+              placeholder="Type message to hotel management..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={sending}
               style={{
                 flex: 1,
-                padding: '8px 12px',
-                borderRadius: '8px',
-                border: '1px solid var(--border)',
-                fontSize: '0.85rem',
-                fontFamily: 'var(--font-body)'
+                padding: '10px 14px',
+                borderRadius: '10px',
+                border: '1px solid rgba(255, 255, 255, 0.14)',
+                background: 'rgba(255, 255, 255, 0.06)',
+                color: '#ffffff',
+                fontSize: '0.88rem',
+                outline: 'none',
+                fontFamily: 'inherit',
               }}
             />
             <button
               type="submit"
               disabled={sending || !input.trim()}
               style={{
-                padding: '8px 12px',
-                borderRadius: '8px',
-                background: 'var(--primary)',
-                color: '#ffffff',
+                width: '42px',
+                height: '42px',
+                borderRadius: '10px',
+                background: input.trim()
+                  ? 'linear-gradient(135deg, #e5c158 0%, #d4af37 100%)'
+                  : 'rgba(255, 255, 255, 0.08)',
+                color: input.trim() ? '#0c0f17' : 'rgba(255, 255, 255, 0.4)',
                 border: 'none',
-                cursor: sending ? 'not-allowed' : 'pointer',
-                opacity: sending ? 0.6 : 1
+                cursor: input.trim() && !sending ? 'pointer' : 'not-allowed',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s',
+                flexShrink: 0,
               }}
             >
-              <Send size={16} />
+              <Send size={18} />
             </button>
           </form>
         </div>
       )}
 
       <style>{`
-        @keyframes slideUp {
+        @keyframes chatSlideUp {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(18px) scale(0.97);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
           }
         }
       `}</style>

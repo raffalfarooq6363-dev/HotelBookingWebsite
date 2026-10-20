@@ -193,24 +193,24 @@ export default function BookingModal({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '22px 28px',
-          borderBottom: '1px solid rgba(89, 135, 125, 0.3)',
-          background: 'linear-gradient(135deg, #f0f7f4 0%, #e0eeea 100%)',
-          color: '#1a2e28'
+          borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+          background: 'linear-gradient(135deg, #090d18 0%, #111827 50%, #0d121f 100%)',
+          color: '#ffffff'
         }}>
           <div>
             <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: 700 }}>
               {step === 5 ? 'Reservation Confirmed' : 'LuxeHaven Reservation'}
             </span>
-            <h3 style={{ margin: '4px 0 0 0', fontSize: '1.35rem', color: '#1a2e28', fontFamily: 'var(--font-serif)' }}>
+            <h3 style={{ margin: '4px 0 0 0', fontSize: '1.35rem', color: '#ffffff', fontFamily: 'var(--font-serif)' }}>
               {step === 5 ? 'Booking Voucher & Details' : room.name}
             </h3>
           </div>
           <button
             onClick={onClose}
             style={{
-              color: '#5a7a70',
-              background: '#ffffff',
-              border: '1px solid #d4e4dd',
+              color: 'rgba(255, 255, 255, 0.8)',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.16)',
               padding: '8px',
               borderRadius: '50%',
               display: 'flex',
@@ -225,9 +225,9 @@ export default function BookingModal({
         {step < 5 && (
           <div style={{
             display: 'flex',
-            background: '#f6f9f8',
+            background: 'rgba(255, 255, 255, 0.03)',
             padding: '12px 28px',
-            borderBottom: '1px solid #d4e4dd',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
             justifyContent: 'space-between'
           }}>
             {[
@@ -277,10 +277,10 @@ export default function BookingModal({
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
                 gap: '20px',
-                background: '#f6f9f8',
+                background: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: '12px',
                 padding: '16px',
-                border: '1px solid #d4e4dd'
+                border: '1px solid rgba(255, 255, 255, 0.08)'
               }}>
                 <img
                   src={room.images[0]}
@@ -304,17 +304,17 @@ export default function BookingModal({
                 gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
                 gap: '12px'
               }}>
-                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Check-In</span>
                   <p style={{ margin: '4px 0 0 0', fontWeight: 700, fontSize: '0.95rem' }}>{searchDates.checkIn}</p>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>From 3:00 PM</span>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Check-Out</span>
                   <p style={{ margin: '4px 0 0 0', fontWeight: 700, fontSize: '0.95rem' }}>{searchDates.checkOut}</p>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>Until 11:00 AM</span>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Duration</span>
                   <p style={{ margin: '4px 0 0 0', fontWeight: 700, fontSize: '0.95rem' }}>{diffDays} {diffDays === 1 ? 'Night' : 'Nights'}</p>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>{searchDates.adults + searchDates.children} Guests</span>
@@ -600,10 +600,10 @@ export default function BookingModal({
 
               {/* Promo code bar */}
               <div style={{
-                background: '#f8fafc',
+                background: 'rgba(255, 255, 255, 0.04)',
                 padding: '14px 16px',
                 borderRadius: '10px',
-                border: '1px solid #e2e8f0'
+                border: '1px solid rgba(255, 255, 255, 0.08)'
               }}>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <Tag size={16} style={{ color: 'var(--gold)' }} />

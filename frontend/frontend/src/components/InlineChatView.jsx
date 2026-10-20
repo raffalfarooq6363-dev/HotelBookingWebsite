@@ -148,9 +148,9 @@ export default function InlineChatView({ currentUser }) {
 
   return (
     <div style={{
-      background: '#ffffff',
+      background: 'var(--bg-card)',
       borderRadius: '16px',
-      border: '1px solid var(--border)',
+      border: '1px solid rgba(212, 175, 55, 0.3)',
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
@@ -160,7 +160,7 @@ export default function InlineChatView({ currentUser }) {
     }}>
       {/* Chat Header */}
       <div style={{
-        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-mid) 100%)',
+        background: 'linear-gradient(135deg, #090d18 0%, #111827 50%, #0d121f 100%)', borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
         color: '#ffffff',
         padding: '18px 20px',
         borderBottom: '1px solid rgba(255,255,255,0.1)'
@@ -192,7 +192,7 @@ export default function InlineChatView({ currentUser }) {
         display: 'flex',
         flexDirection: 'column',
         gap: '14px',
-        background: 'var(--bg-secondary)'
+        background: 'rgba(5, 8, 15, 0.5)'
       }}>
         {messages.length === 0 ? (
           <div style={{
@@ -226,12 +226,12 @@ export default function InlineChatView({ currentUser }) {
                   </div>
                 )}
                 <div style={{
-                  background: isMe ? 'var(--primary)' : '#ffffff',
-                  color: isMe ? '#ffffff' : 'var(--text-main)',
+                  background: isMe ? 'linear-gradient(135deg, #e5c158 0%, #d4af37 100%)' : 'rgba(255, 255, 255, 0.08)',
+                  color: isMe ? '#0c0f17' : '#ffffff',
                   padding: '10px 14px',
                   borderRadius: isMe ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
                   maxWidth: '70%', wordWrap: 'break-word',
-                  border: !isMe ? '1px solid var(--border)' : 'none',
+                  border: !isMe ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
                   fontSize: '0.9rem', lineHeight: 1.4
                 }}>
                   <p style={{ margin: '0 0 2px', fontSize: '0.72rem', fontWeight: 600, opacity: 0.7 }}>
@@ -253,8 +253,8 @@ export default function InlineChatView({ currentUser }) {
       <form
         onSubmit={handleSendMessage}
         style={{
-          padding: '16px 20px', borderTop: '1px solid var(--border)',
-          display: 'flex', gap: '10px', background: '#ffffff'
+          padding: '16px 20px', borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          display: 'flex', gap: '10px', background: 'rgba(10, 14, 25, 0.95)'
         }}
       >
         <input
@@ -266,8 +266,8 @@ export default function InlineChatView({ currentUser }) {
           disabled={sending}
           style={{
             flex: 1, padding: '10px 14px', borderRadius: '10px',
-            border: '1px solid var(--border)', fontSize: '0.9rem',
-            fontFamily: 'var(--font-body)', outline: 'none'
+            border: '1px solid rgba(255, 255, 255, 0.14)', background: 'rgba(255, 255, 255, 0.06)', color: '#ffffff', fontSize: '0.9rem',
+            fontFamily: 'inherit', outline: 'none'
           }}
         />
         <button

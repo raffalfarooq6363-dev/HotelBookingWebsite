@@ -466,24 +466,53 @@ export const SPECIAL_OFFERS = [
 
 export const FAQS = [
   {
+    id: 1,
+    category: 'Reservations',
+    tag: '48H Free Cancellation',
     question: 'What is LuxeHaven’s cancellation & refund policy?',
     answer: 'We provide full flexible cancellation up to 48 hours before your scheduled arrival date on all standard and flexible rates. For non-refundable promotional rates, bookings can be rescheduled once without penalty.'
   },
   {
+    id: 2,
+    category: 'Pricing',
+    tag: 'Transparent Rates',
     question: 'Are taxes and resort service fees included in the price?',
     answer: 'The rate displayed during search reflects the room charge per night. Detailed local hospitality taxes (typically 10-12%) and service charges are clearly itemized in Step 1 of your reservation checkout before payment.'
   },
   {
+    id: 3,
+    category: 'Stay & Arrival',
+    tag: 'Flexible Timings',
     question: 'Can I request early check-in or late check-out?',
     answer: 'Yes! You can choose our guaranteed Early Check-in (10:00 AM) or Late Check-out (4:00 PM) add-on during reservation. If not selected, standard check-in begins at 3:00 PM and check-out is 11:00 AM, with complimentary luggage storage available anytime.'
   },
   {
+    id: 4,
+    category: 'Payment',
+    tag: 'Encrypted & Global',
     question: 'What payment methods are supported on LuxeHaven?',
     answer: 'We accept all major international credit/debit cards (Visa, MasterCard, American Express, Discover), PayPal, Apple Pay, Google Pay, and offer a Pay Upon Arrival option for select rooms.'
   },
   {
+    id: 5,
+    category: 'Reservations',
+    tag: 'Instant Voucher',
     question: 'How do I access and manage my reservation after booking?',
     answer: 'Your reservation is immediately stored in your "My Bookings" dashboard and available for instant viewing or PDF voucher printing. You also receive an instant confirmation number and summary.'
+  },
+  {
+    id: 6,
+    category: 'VIP Services',
+    tag: 'Private Charters',
+    question: 'Do you arrange airport transfers or private speedboat charters?',
+    answer: 'Yes. Every booking includes the option to reserve private executive chauffeur or high-speed luxury yacht/speedboat transfers directly from the airport terminal to your resort dock.'
+  },
+  {
+    id: 7,
+    category: 'VIP Services',
+    tag: 'Bespoke Curations',
+    question: 'How do I arrange private beachfront dining or anniversary surprises?',
+    answer: 'Our 24/7 Dedicated Concierge Desk coordinates private chef dinners, yacht charters, floral arrangements, and milestone celebrations. Simply connect via our Concierge chat or hotline.'
   }
 ];
 

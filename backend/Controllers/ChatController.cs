@@ -27,8 +27,18 @@ namespace hotel_booking_website.Controllers
         [HttpGet("conversations/all")]
         public async Task<ActionResult> GetAllConversations()
         {
-            var conversations = await _context.ChatMessages
-                .GroupBy(m => m.ConversationId)
+            var allMsgs = await _context.ChatMessages.ToListAsync();
+
+            string NormalizeKey(ChatMessage m)
+            {
+                var convId = m.ConversationId ?? "";
+                var clean = convId.StartsWith("conv_") ? convId.Substring(5) : convId;
+                clean = clean.EndsWith("-widget") ? clean.Substring(0, clean.Length - 7) : clean;
+                return string.IsNullOrWhiteSpace(clean) ? convId : $"conv_{clean}";
+            }
+
+            var conversations = allMsgs
+                .GroupBy(NormalizeKey)
                 .Select(g => new
                 {
                     ConversationId = g.Key,
@@ -43,7 +53,7 @@ namespace hotel_booking_website.Controllers
                                   .FirstOrDefault() ?? ""
                 })
                 .OrderByDescending(c => c.LastMessageAt)
-                .ToListAsync();
+                .ToList();
 
             return Ok(conversations);
         }
@@ -54,8 +64,20 @@ namespace hotel_booking_website.Controllers
         [HttpGet("messages/{conversationId}")]
         public async Task<ActionResult> GetMessages(string conversationId)
         {
+            var cleanId = conversationId.StartsWith("conv_") ? conversationId.Substring(5) : conversationId;
+            cleanId = cleanId.EndsWith("-widget") ? cleanId.Substring(0, cleanId.Length - 7) : cleanId;
+
+            var possibleIds = new List<string>
+            {
+                conversationId,
+                cleanId,
+                $"conv_{cleanId}",
+                $"{cleanId}-widget",
+                $"conv_{cleanId}-widget"
+            };
+
             var messages = await _context.ChatMessages
-                .Where(m => m.ConversationId == conversationId)
+                .Where(m => possibleIds.Contains(m.ConversationId) || (cleanId.Length > 0 && m.SenderId == cleanId))
                 .OrderBy(m => m.CreatedAt)
                 .Select(m => new
                 {

@@ -62,7 +62,8 @@ export default function RoomCatalog({
                 padding: '8px 14px',
                 borderRadius: '8px',
                 border: '1px solid var(--border-subtle)',
-                background: '#ffffff',
+                background: 'rgba(255, 255, 255, 0.06)',
+                color: '#ffffff',
                 fontSize: '0.85rem',
                 fontWeight: 600
               }}
@@ -77,13 +78,13 @@ export default function RoomCatalog({
                 value={filters.sortBy}
                 onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
                 style={{
-                  background: '#ffffff',
-                  border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
                   borderRadius: '8px',
                   padding: '8px 12px',
                   fontSize: '0.85rem',
                   fontWeight: 600,
-                  color: 'var(--primary)',
+                  color: '#ffffff',
                   cursor: 'pointer'
                 }}
               >
@@ -98,8 +99,8 @@ export default function RoomCatalog({
             {/* Grid / List View Toggle */}
             <div style={{
               display: 'flex',
-              background: '#ffffff',
-              border: '1px solid var(--border-subtle)',
+              background: 'var(--bg-card)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               borderRadius: '8px',
               padding: '2px'
             }}>
@@ -154,11 +155,11 @@ export default function RoomCatalog({
           <div>
             {rooms.length === 0 ? (
               <div style={{
-                background: '#ffffff',
+                background: 'var(--bg-card)',
                 borderRadius: '16px',
                 padding: '60px 20px',
                 textAlign: 'center',
-                border: '1px dashed var(--border-subtle)'
+                border: '1px dashed rgba(212, 175, 55, 0.3)'
               }}>
                 <Sparkles size={40} style={{ color: 'var(--gold)', margin: '0 auto 16px auto', display: 'block' }} />
                 <h3 style={{ fontSize: '1.4rem', marginBottom: '8px' }}>No Available Stays Found</h3>
