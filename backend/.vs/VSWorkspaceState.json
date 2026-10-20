@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
+    "\\Controllers",
     "\\Models"
   ],
-  "SelectedNode": "\\hotel booking website.slnx",
+  "SelectedNode": "\\Controllers\\BookingsController.cs",
   "PreviewInSolutionExplorer": false
 }

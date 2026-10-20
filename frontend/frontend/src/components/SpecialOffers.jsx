@@ -22,7 +22,7 @@ export default function SpecialOffers({ onCopyCode, metaData, offersList }) {
   };
 
   return (
-    <section id="offers" className="section-padding" style={{ backgroundColor: '#ffffff' }}>
+    <section id="offers" className="section-padding" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <div className="container">
         <div className="section-header">
           <span className="section-subtitle">{subtitle}</span>
@@ -43,7 +43,7 @@ export default function SpecialOffers({ onCopyCode, metaData, offersList }) {
               style={{
                 borderRadius: '16px',
                 border: '1px solid var(--border-subtle)',
-                background: '#f6f9f8',
+                background: 'var(--bg-card)',
                 padding: '30px',
                 position: 'relative',
                 display: 'flex',
@@ -58,7 +58,7 @@ export default function SpecialOffers({ onCopyCode, metaData, offersList }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                   <span style={{
                     background: 'var(--gold-light)',
-                    color: '#3d6b5e',
+                    color: '#f7df94',
                     border: '1px solid var(--gold-border)',
                     padding: '4px 10px',
                     borderRadius: '6px',
@@ -88,8 +88,8 @@ export default function SpecialOffers({ onCopyCode, metaData, offersList }) {
 
               {/* Promo Code Box */}
               <div style={{
-                background: '#ffffff',
-                border: '1px dashed var(--gold-border)',
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px dashed rgba(212, 175, 55, 0.4)',
                 borderRadius: '10px',
                 padding: '12px 16px',
                 display: 'flex',
@@ -114,8 +114,8 @@ export default function SpecialOffers({ onCopyCode, metaData, offersList }) {
                     gap: '6px',
                     padding: '6px 12px',
                     borderRadius: '6px',
-                    background: copiedId === offer.id ? '#ecfdf5' : 'var(--gold-light)',
-                    color: copiedId === offer.id ? '#065f46' : '#3d6b5e',
+                    background: copiedId === offer.id ? 'rgba(16, 185, 129, 0.2)' : 'rgba(212, 175, 55, 0.16)',
+                    color: copiedId === offer.id ? '#34d399' : '#f7df94',
                     fontSize: '0.8rem',
                     fontWeight: 700
                   }}

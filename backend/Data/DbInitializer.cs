@@ -24,6 +24,8 @@ namespace hotel_booking_website.Data
                 logger.LogInformation("Ensuring SQL Server database and schema are created...");
                 await context.Database.EnsureCreatedAsync();
 
+                await context.Database.ExecuteSqlRawAsync(@"IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RolePermissions') BEGIN CREATE TABLE [dbo].[RolePermissions] ([Id] NVARCHAR(450) NOT NULL PRIMARY KEY, [RoleName] NVARCHAR(60) NOT NULL, [Description] NVARCHAR(255) NOT NULL, [IsSystem] BIT NOT NULL, [AllowedModules] NVARCHAR(MAX) NOT NULL, [UpdatedAt] DATETIME2 NOT NULL); CREATE UNIQUE INDEX [IX_RolePermissions_RoleName] ON [dbo].[RolePermissions] ([RoleName]); END");
+
                 // 1. Seed Destinations
                 if (!await context.Destinations.AnyAsync())
                 {

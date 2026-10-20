@@ -106,7 +106,7 @@ export default function ConciergeWidget({ onOpenAuth, onExploreCatalog, onCopyCo
           </div>
           <span>VIP Concierge</span>
           <span style={{
-            background: '#ffffff', color: 'var(--primary)',
+            background: '#0c0f17', color: '#f7df94',
             fontSize: '0.68rem', fontWeight: 800, padding: '2px 7px',
             borderRadius: 'var(--radius-full)'
           }}>
@@ -122,10 +122,10 @@ export default function ConciergeWidget({ onOpenAuth, onExploreCatalog, onCopyCo
           maxWidth: 'calc(100vw - 32px)',
           height: '520px',
           maxHeight: 'calc(100vh - 100px)',
-          background: '#ffffff',
+          background: 'linear-gradient(165deg, rgba(14, 20, 36, 0.98) 0%, rgba(9, 13, 24, 0.99) 100%)',
           borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-xl)',
-          border: '1px solid var(--border)',
+          boxShadow: '0 12px 50px rgba(0, 0, 0, 0.75), 0 0 25px rgba(212, 175, 55, 0.2)',
+          border: '1px solid rgba(212, 175, 55, 0.3)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -133,7 +133,8 @@ export default function ConciergeWidget({ onOpenAuth, onExploreCatalog, onCopyCo
         }}>
           {/* Header */}
           <div style={{
-            background: 'var(--primary)',
+            background: 'linear-gradient(135deg, #090d18 0%, #111827 50%, #0d121f 100%)',
+            borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
             color: '#ffffff',
             padding: '16px 20px',
             display: 'flex',
@@ -220,7 +221,7 @@ export default function ConciergeWidget({ onOpenAuth, onExploreCatalog, onCopyCo
           {/* Quick Option Chips */}
           <div style={{
             padding: '8px 12px',
-            background: '#ffffff',
+            background: 'rgba(255, 255, 255, 0.02)',
             borderTop: '1px solid var(--border-subtle)',
             display: 'flex',
             gap: '6px',
@@ -252,7 +253,7 @@ export default function ConciergeWidget({ onOpenAuth, onExploreCatalog, onCopyCo
             onSubmit={(e) => { e.preventDefault(); handleSend(); }}
             style={{
               padding: '12px 16px',
-              background: '#ffffff',
+              background: 'rgba(255, 255, 255, 0.04)',
               borderTop: '1px solid var(--border)',
               display: 'flex',
               alignItems: 'center',
@@ -267,7 +268,7 @@ export default function ConciergeWidget({ onOpenAuth, onExploreCatalog, onCopyCo
               style={{
                 flex: 1,
                 border: 'none',
-                background: 'var(--bg-alt)',
+                background: 'rgba(255, 255, 255, 0.06)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.1)',
                 padding: '10px 14px',
                 borderRadius: 'var(--radius-sm)',
                 fontSize: '0.85rem',

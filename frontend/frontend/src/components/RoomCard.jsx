@@ -270,7 +270,7 @@ export default function RoomCard({
           color: 'var(--text-muted)',
           marginBottom: '16px',
           paddingBottom: '14px',
-          borderBottom: '1px solid #d4e4dd'
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
         }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Users size={14} /> Up to {room.maxGuests} guests
@@ -290,8 +290,8 @@ export default function RoomCard({
               key={idx}
               style={{
                 fontSize: '0.72rem',
-                background: '#edf5f2',
-                color: '#3d6b5e',
+                background: 'rgba(212, 175, 55, 0.12)',
+                color: '#f7df94',
                 padding: '3px 8px',
                 borderRadius: '4px',
                 fontWeight: 600
@@ -347,7 +347,8 @@ export default function RoomCard({
                 border: '1px solid var(--border-subtle)',
                 fontSize: '0.85rem',
                 fontWeight: 600,
-                color: 'var(--primary)'
+                color: '#ffffff',
+                background: 'rgba(255, 255, 255, 0.06)'
               }}
             >
               Details
@@ -355,12 +356,13 @@ export default function RoomCard({
             <button
               onClick={() => onBookNow(room)}
               style={{
-                background: 'var(--primary)',
-                color: '#ffffff',
+                background: 'linear-gradient(135deg, #e5c158 0%, #d4af37 50%, #b89037 100%)',
+                color: '#0c0f17',
                 padding: '8px 16px',
                 borderRadius: '8px',
                 fontSize: '0.85rem',
-                fontWeight: 600,
+                fontWeight: 700,
+                border: '1px solid rgba(255, 240, 190, 0.5)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',

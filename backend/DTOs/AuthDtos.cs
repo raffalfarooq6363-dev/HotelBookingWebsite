@@ -21,7 +21,6 @@ namespace hotel_booking_website.DTOs
     public class LoginDto
     {
         [Required]
-        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         [Required]

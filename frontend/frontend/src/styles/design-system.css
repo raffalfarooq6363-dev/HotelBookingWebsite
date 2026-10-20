@@ -164,12 +164,12 @@
      6. GRADIENTS
      ─────────────────────────────────────────────────────────────────────── */
 
-  --gradient-primary: linear-gradient(135deg, #7e22ce 0%, #9333ea 100%);
-  --gradient-accent: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
-  --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --gradient-primary: linear-gradient(135deg, #e5c158 0%, #d4af37 50%, #b89037 100%);
+  --gradient-accent: linear-gradient(135deg, #fce08c 0%, #d4af37 100%);
+  --gradient-gold: linear-gradient(135deg, #fce08c 0%, #d4af37 50%, #b89037 100%);
   --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --gradient-warm: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  --gradient-light: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 100%);
+  --gradient-light: linear-gradient(135deg, #101628 0%, #0c111e 100%);
 
   /* ─────────────────────────────────────────────────────────────────────
      7. Z-INDEX SCALE
@@ -210,28 +210,38 @@
      10. SEMANTIC TOKENS
      ─────────────────────────────────────────────────────────────────────── */
 
-  /* Text Colors */
-  --text-primary: var(--color-neutral-900);
-  --text-secondary: var(--color-neutral-600);
-  --text-tertiary: var(--color-neutral-500);
-  --text-muted: var(--color-neutral-400);
-  --text-light: var(--color-neutral-50);
-  --text-on-primary: var(--color-neutral-0);
-  --text-on-accent: var(--color-neutral-0);
+  /* Text Colors — Luxury Bright & Gold */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.76);
+  --text-tertiary: rgba(255, 255, 255, 0.56);
+  --text-muted: rgba(255, 255, 255, 0.44);
+  --text-light: rgba(255, 255, 255, 0.35);
+  --text-on-primary: #0c0f17;
+  --text-on-accent: #0c0f17;
+  --text-main: #ffffff;
+  --text-body: rgba(255, 255, 255, 0.85);
 
-  /* Background Colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f9f5ff;
-  --bg-overlay: rgba(0, 0, 0, 0.5);
-  --bg-overlay-light: rgba(0, 0, 0, 0.25);
+  /* Background Colors — Midnight Obsidian Luxury (Navbar Theme) */
+  --bg-main: #090d18;
+  --bg-primary: #090d18;
+  --bg-secondary: #0c111e;
+  --bg-tertiary: #101626;
+  --bg-card: #0e1424;
+  --bg-card-hover: #151d33;
+  --bg-alt: #101628;
+  --bg-cream: #0c111e;
+  --bg-dark: #070a12;
+  --bg-overlay: rgba(5, 8, 15, 0.82);
+  --bg-overlay-light: rgba(9, 13, 24, 0.6);
 
-  /* Border Colors */
-  --border-default: var(--color-neutral-200);
-  --border-strong: var(--color-neutral-300);
-  --border-light: var(--color-neutral-100);
-  --border-accent: var(--color-accent-300);
-  --border-primary: var(--color-primary-300);
+  /* Border Colors — Subtle Platinum & Royal Gold */
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(212, 175, 55, 0.3);
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(212, 175, 55, 0.4);
+  --border-primary: rgba(212, 175, 55, 0.3);
+  --border: rgba(255, 255, 255, 0.09);
 
   /* ─────────────────────────────────────────────────────────────────────
      11. CONTAINER SIZES
@@ -244,23 +254,31 @@
   --container-2xl: 1400px;
 
   /* ─────────────────────────────────────────────────────────────────────
-     12. BRAND COLORS (Component-Specific)
+     12. BRAND COLORS (Component-Specific — Royal Gold & Midnight)
      ─────────────────────────────────────────────────────────────────────── */
 
-  --primary: var(--color-primary-600);
-  --primary-mid: var(--color-primary-700);
-  --gold: #b89037;
-  --gold-bright: #d4af37;
-  --gold-gradient: linear-gradient(135deg, #d4af37 0%, #b89037 100%);
-  --gold-glow: 0 0 20px rgba(212, 175, 55, 0.3);
-  --text-main: var(--color-neutral-900);
-  --text-muted: var(--color-neutral-500);
-  --border: var(--border-default);
-  --bg-alt: var(--bg-tertiary);
-  --bg-dark: var(--color-neutral-950);
-  --bg-cream: #faf8fd;
-  --nav-height: 72px;
+  --primary: #d4af37;
+  --primary-mid: #b89037;
+  --primary-dark: #967520;
+  --primary-light: rgba(212, 175, 55, 0.16);
+  --primary-pale: rgba(212, 175, 55, 0.08);
+
+  --gold: #d4af37;
+  --gold-bright: #fce08c;
+  --gold-mid: #e5c158;
+  --gold-dark: #b89037;
+  --gold-light: rgba(212, 175, 55, 0.14);
+  --gold-border: rgba(212, 175, 55, 0.35);
+  --gold-gradient: linear-gradient(135deg, #fce08c 0%, #d4af37 50%, #b89037 100%);
+  --gold-glow: 0 4px 20px rgba(212, 175, 55, 0.35);
+
+  --nav-height: 74px;
   --font-serif: var(--font-display);
+  --font-sans: var(--font-body);
+
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.55);
+  --shadow-hover: 0 18px 45px rgba(0, 0, 0, 0.7), 0 0 25px rgba(212, 175, 55, 0.2);
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Dark Mode (Optional) */

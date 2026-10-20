@@ -152,7 +152,7 @@ export default function CustomerDashboard({
         <aside style={{
           width: '260px',
           minWidth: '260px',
-          background: '#ffffff',
+          background: 'var(--bg-card)',
           borderRight: '1px solid var(--border)',
           display: 'flex',
           flexDirection: 'column',
@@ -187,7 +187,7 @@ export default function CustomerDashboard({
                   borderRadius: '10px',
                   fontSize: '0.9rem',
                   fontWeight: isActive ? 700 : 600,
-                  color: isActive ? 'var(--primary-light)' : '#1a1a2e',
+                  color: isActive ? '#f7df94' : 'rgba(255, 255, 255, 0.75)',
                   background: isActive ? 'var(--primary-pale)' : 'transparent',
                   border: 'none',
                   cursor: 'pointer',
@@ -207,7 +207,7 @@ export default function CustomerDashboard({
                 )}
                 <tab.icon
                   size={18}
-                  style={{ color: isActive ? 'var(--primary-light)' : '#4a4a6a', flexShrink: 0 }}
+                  style={{ color: isActive ? 'var(--gold)' : 'rgba(255, 255, 255, 0.5)', flexShrink: 0 }}
                 />
                 {tab.label}
               </button>
@@ -250,7 +250,7 @@ export default function CustomerDashboard({
                   { label: 'Nights Stayed',   value: stats.totalNights,             icon: Calendar,    color: 'var(--gold)' }
                 ].map((stat, i) => (
                   <div key={i} style={{
-                    background: '#ffffff', borderRadius: '14px', padding: '22px',
+                    background: 'var(--bg-card)', borderRadius: '14px', padding: '22px',
                     border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -274,7 +274,7 @@ export default function CustomerDashboard({
 
               {/* Recent Reservations */}
               <div style={{
-                background: '#ffffff', borderRadius: '14px', padding: '24px',
+                background: 'var(--bg-card)', borderRadius: '14px', padding: '24px',
                 border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
@@ -349,7 +349,7 @@ export default function CustomerDashboard({
                     value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
                     style={{
                       width: '100%', padding: '10px 14px 10px 38px', borderRadius: '10px',
-                      border: '1px solid var(--border)', fontSize: '0.88rem', background: '#ffffff'
+                      border: '1px solid var(--border)', fontSize: '0.88rem', background: 'var(--bg-card)', color: '#ffffff'
                     }}
                   />
                 </div>
@@ -359,8 +359,8 @@ export default function CustomerDashboard({
                     onClick={() => setBookingFilter(f)}
                     style={{
                       padding: '9px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 600,
-                      background: bookingFilter === f ? 'var(--primary)' : '#ffffff',
-                      color: bookingFilter === f ? '#ffffff' : 'var(--text-body)',
+                      background: bookingFilter === f ? 'var(--gold-gradient)' : 'rgba(255, 255, 255, 0.05)',
+                      color: bookingFilter === f ? '#0c0f17' : 'rgba(255, 255, 255, 0.75)',
                       border: bookingFilter === f ? 'none' : '1px solid var(--border)',
                       cursor: 'pointer'
                     }}
@@ -374,7 +374,7 @@ export default function CustomerDashboard({
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 {filteredBookings.map(booking => (
                   <div key={booking.id} style={{
-                    background: '#ffffff', borderRadius: '14px', padding: '20px',
+                    background: 'var(--bg-card)', borderRadius: '14px', padding: '20px',
                     border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)',
                     display: 'flex', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap'
                   }}>
@@ -473,7 +473,7 @@ export default function CustomerDashboard({
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
                 {wishlist.map(room => (
                   <div key={room.id} style={{
-                    background: '#ffffff', borderRadius: '14px', overflow: 'hidden',
+                    background: 'var(--bg-card)', borderRadius: '14px', overflow: 'hidden',
                     border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)'
                   }}>
                     <img
@@ -526,7 +526,7 @@ export default function CustomerDashboard({
           {activeTab === 'profile' && (
             <div style={{ maxWidth: '600px' }}>
               <div style={{
-                background: '#ffffff', borderRadius: '14px', padding: '28px',
+                background: 'var(--bg-card)', borderRadius: '14px', padding: '28px',
                 border: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)'
               }}>
                 <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', marginBottom: '24px', color: 'var(--text-main)' }}>

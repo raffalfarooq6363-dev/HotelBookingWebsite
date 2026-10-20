@@ -33,6 +33,13 @@ body {
   overflow-x: hidden;
 }
 
+button {
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  color: inherit;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    TYPOGRAPHY
    ─────────────────────────────────────────────────────────────────────────── */
@@ -119,7 +126,7 @@ mark {
    ─────────────────────────────────────────────────────────────────────────── */
 
 a {
-  color: var(--color-primary-600);
+  color: var(--gold-bright);
   text-decoration: none;
   transition: color var(--transition-base);
   position: relative;
@@ -127,17 +134,17 @@ a {
 }
 
 a:hover {
-  color: var(--color-primary-700);
+  color: #ffffff;
 }
 
 a:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid rgba(212, 175, 55, 0.6);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
 a:active {
-  color: var(--color-primary-800);
+  color: var(--gold);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -263,14 +270,14 @@ tr:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--color-primary-500), var(--color-accent-500));
+  background: linear-gradient(180deg, #d4af37, #b89037);
   border-radius: var(--radius-full);
   border: 2px solid var(--bg-secondary);
   transition: background var(--transition-base);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--color-primary-600), var(--color-accent-600));
+  background: linear-gradient(180deg, #fce08c, #d4af37);
 }
 
 ::-webkit-scrollbar-corner {
@@ -282,7 +289,7 @@ tr:hover {
    ─────────────────────────────────────────────────────────────────────────── */
 
 :focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid rgba(212, 175, 55, 0.6);
   outline-offset: 2px;
 }
 
@@ -290,7 +297,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid rgba(212, 175, 55, 0.6);
   outline-offset: 2px;
 }
 
@@ -299,12 +306,12 @@ textarea:focus-visible {
    ─────────────────────────────────────────────────────────────────────────── */
 
 ::selection {
-  background-color: var(--color-primary-500);
+  background-color: rgba(212, 175, 55, 0.4);
   color: var(--color-neutral-0);
 }
 
 ::-moz-selection {
-  background-color: var(--color-primary-500);
+  background-color: rgba(212, 175, 55, 0.4);
   color: var(--color-neutral-0);
 }
 

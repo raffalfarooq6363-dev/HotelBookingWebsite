@@ -20,7 +20,7 @@ section.section-lg {
   padding: var(--space-24) 0;
 }
 
-/* Section Dividers */
+/* Section Dividers - Luxury Gold Hairline */
 section:not(:last-child)::after {
   content: '';
   position: absolute;
@@ -28,7 +28,7 @@ section:not(:last-child)::after {
   left: 5%;
   right: 5%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35), transparent);
 }
 
 .container {
@@ -61,20 +61,44 @@ section:not(:last-child)::after {
   margin-bottom: var(--space-16);
 }
 
+.section-subtitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #f7df94;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 6px 18px;
+  border-radius: 9999px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.section-title,
 .section-header h2 {
+  font-family: var(--font-display);
   font-size: clamp(var(--text-3xl), 4vw, var(--text-5xl));
   margin-bottom: var(--space-4);
-  background: var(--gradient-primary);
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ffffff 40%, #fce08c 80%, #d4af37 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: 0.01em;
 }
 
+.section-description,
 .section-header p {
   font-size: var(--text-lg);
-  color: var(--text-secondary);
-  max-width: 600px;
+  color: rgba(255, 255, 255, 0.74);
+  max-width: 650px;
   margin: 0 auto;
+  line-height: 1.7;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -323,9 +347,15 @@ section:not(:last-child)::after {
   border-color: var(--border-strong);
 }
 
+.form-control {
+  color: #ffffff;
+  background-color: var(--bg-card);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
 .form-control:focus {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
   outline: none;
 }
 
